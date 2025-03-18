@@ -1,0 +1,131 @@
+[gd_scene load_steps=9 format=3 uid="uid://cru7bls2kuvmw"]
+
+[ext_resource type="Texture2D" uid="uid://ccffh0je0va6t" path="res://icon.svg" id="1_aalgr"]
+[ext_resource type="Script" uid="uid://cn2l2ryheu4fc" path="res://UI/TouchGameControl/extends/joystick_panel.gd" id="1_y5eyt"]
+[ext_resource type="Texture2D" uid="uid://n0jslv0c3jj1" path="res://World/block/coarse_dirt.png" id="2_567tx"]
+[ext_resource type="Script" uid="uid://bdbetsldkt81o" path="res://UI/TouchGameControl/extends/up.gd" id="2_dk3lh"]
+[ext_resource type="Script" uid="uid://dd11ho3jjgahq" path="res://UI/TouchGameControl/extends/down.gd" id="4_i678u"]
+[ext_resource type="Script" uid="uid://daehab7du7slg" path="res://UI/TouchGameControl/extends/rotation.gd" id="4_wojv6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_567tx"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wsnd7"]
+
+[node name="UI_game" type="CanvasLayer"]
+
+[node name="Rotation" type="Panel" parent="."]
+anchors_preset = -1
+anchor_left = 0.49566
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_567tx")
+script = ExtResource("4_wojv6")
+metadata/_edit_use_anchors_ = true
+
+[node name="UP" type="Panel" parent="Rotation"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.4998
+offset_top = -94.0
+offset_right = 87.5002
+offset_bottom = 34.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.8, 0.8)
+script = ExtResource("2_dk3lh")
+metadata/_edit_use_anchors_ = true
+
+[node name="TextureRect" type="TextureRect" parent="Rotation/UP"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -64.0
+offset_top = -64.0
+offset_right = 64.0
+offset_bottom = 64.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_aalgr")
+metadata/_edit_use_anchors_ = true
+
+[node name="DOWN" type="Panel" parent="Rotation"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.4998
+offset_top = 76.0
+offset_right = 87.5002
+offset_bottom = 204.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.8, 0.8)
+script = ExtResource("4_i678u")
+metadata/_edit_use_anchors_ = true
+
+[node name="TextureRect" type="TextureRect" parent="Rotation/DOWN"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -64.0
+offset_top = -64.0
+offset_right = 64.0
+offset_bottom = 64.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_aalgr")
+metadata/_edit_use_anchors_ = true
+
+[node name="JoystickPanel" type="Panel" parent="."]
+anchors_preset = -1
+anchor_top = 0.475309
+anchor_right = 0.454861
+anchor_bottom = 1.0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wsnd7")
+script = ExtResource("1_y5eyt")
+metadata/_edit_use_anchors_ = true
+
+[node name="JoystickBackground" type="TextureRect" parent="JoystickPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 100.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_aalgr")
+
+[node name="JoystickHandle" type="TextureRect" parent="JoystickPanel/JoystickBackground"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0001
+offset_right = 20.0
+offset_bottom = 19.9999
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_567tx")
