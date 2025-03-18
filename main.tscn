@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3 uid="uid://cxjbquregacxa"]
+
+[ext_resource type="PackedScene" uid="uid://c5vy5ivxkg8nm" path="res://World/world.tscn" id="1_0xm2m"]
+[ext_resource type="PackedScene" uid="uid://byn1lstipdql6" path="res://Player/Player.tscn" id="2_h2yge"]
+[ext_resource type="PackedScene" uid="uid://dqclwxcl6cypf" path="res://UI/ui.tscn" id="3_h2yge"]
+
+[node name="Main" type="Node3D"]
+
+[node name="World" parent="." instance=ExtResource("1_0xm2m")]
+
+[node name="Player" parent="." groups=["Player"] instance=ExtResource("2_h2yge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.92148, 0)
+
+[node name="UI" parent="." instance=ExtResource("3_h2yge")]
