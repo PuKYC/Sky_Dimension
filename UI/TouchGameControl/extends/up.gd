@@ -1,4 +1,4 @@
-extends "res://UI/TouchGameControl/TouchControlBase.gd"
+extends TouchControlBase
 
 
 func on_control_started(_event: InputEventScreenTouch):
