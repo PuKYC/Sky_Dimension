@@ -1,7 +1,8 @@
 extends CharacterBody3D
 
 @export var move_speed = 5.0  # 移动速度（米/秒）
-@onready var direction = Vector3.ZERO
+
+var direction = Vector3.ZERO
 var direction_level = Vector2.ZERO
 var direction_verticale_up = 0.0
 var direction_verticale_down = 0.0
@@ -25,3 +26,6 @@ func set_verticale_up_input(input: float):
 	
 func set_verticale_down_input(input: float):
 	direction_verticale_down = input
+
+func get_camera_rotation() -> Vector3:
+	return camera.rotation

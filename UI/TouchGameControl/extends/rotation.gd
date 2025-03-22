@@ -1,4 +1,4 @@
-extends "res://UI/TouchGameControl/TouchControlBase.gd"
+extends TouchControlBase
 
 @export var rotation_sensitivity := 0.002
 @export var vertical_clamp := Vector2(deg_to_rad(-80), deg_to_rad(80))
@@ -7,12 +7,11 @@ var camera_start_rotation = Vector3.ZERO
 var touch_start_position = Vector2.ZERO
 var position_delta = Vector2.ZERO
 
-@onready var camera = get_tree().get_first_node_in_group("camera")
 @onready var UP = $UP
 @onready var DOWN = $DOWN
 
 func on_control_started(_event: InputEventScreenTouch):
-	camera_start_rotation = camera.rotation
+	camera_start_rotation = Player.get_camera_rotation()
 	touch_start_position = _event.position
 
 func on_control_updated(event: InputEventScreenDrag):
