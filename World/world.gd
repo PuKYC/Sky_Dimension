@@ -27,7 +27,7 @@ func generate_circle(circle_center: Vector3, radius: int) -> Array:
 
 
 func generate_world() -> Array:
-	return generate_circle(Vector3(0, 0, 0), 5)
+	return generate_circle(Vector3(0, 0, 0), 300)
 
 
 func _ready() -> void:
