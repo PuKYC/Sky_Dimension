@@ -165,47 +165,81 @@ func merge_faces(block_culled_faces: Dictionary) -> Dictionary:
 func set_world(list: Array):
 	var culled_faces = determine_culled_faces(list[0])
 	var merge_faces = merge_faces(culled_faces)
-	
+
 	var surfacetool = SurfaceTool.new()
 	surfacetool.begin(Mesh.PRIMITIVE_TRIANGLES)
 	
+	# 预计算基础立方体顶点（假设size是类成员变量）
+	var base_ver = [
+		Vector3(size, -size, size),
+		Vector3(-size, -size, size),
+		Vector3(-size, size, size),
+		Vector3(size, size, size),
+		Vector3(size, -size, -size),
+		Vector3(-size, -size, -size),
+		Vector3(-size, size, -size),
+		Vector3(size, size, -size)
+	]
+
 	for face in merge_faces:
-		var axis = merge_faces[face]["axis"]
-		var merge_axis_x = merge_faces[face]["merge_axis_x"]
-		var merge_axis_y = merge_faces[face]["merge_axis_y"]
+		var face_data = merge_faces[face]
+		var axis = face_data["axis"]
+		var merge_axis_x = face_data["merge_axis_x"]
+		var merge_axis_y = face_data["merge_axis_y"]
+		var face_offset = FACE_OFFSETS[face][axis]
 		var face_index = [FaceMask[face] * 2, FaceMask[face] * 2 + 1]
-		
-		
-		for position_h_w in merge_faces[face]["rects"]:
-			
-			var ver = [
-			Vector3(size, -size, size),
-			Vector3(-size, -size, size),
-			Vector3(-size, size, size),
-			Vector3(size, size, size),
-			Vector3(size, -size, -size),
-			Vector3(-size, -size, -size),
-			Vector3(-size, size, -size),
-			Vector3(size, size, -size)
-			]
-			for index in range(0, 8):
-				if FACE_OFFSETS[face][axis]-(ver[index][axis]*2) == 0 and ver[index][merge_axis_x] > 0:
-					ver[index][merge_axis_x] += position_h_w[1].x
-				if FACE_OFFSETS[face][axis]-(ver[index][axis]*2) == 0 and ver[index][merge_axis_y] > 0:
-					ver[index][merge_axis_y] += position_h_w[1].y
-				
-			# 处理面的两个三角形
+
+		# 预计算需要调整的顶点索引
+		var adjust_x_indices = []
+		var adjust_y_indices = []
+		for index in base_ver.size():
+			var vertex = base_ver[index]
+			if is_equal_approx(face_offset - vertex[axis] * 2, 0):
+				if vertex[merge_axis_x] > 0:
+					adjust_x_indices.append(index)
+				if vertex[merge_axis_y] > 0:
+					adjust_y_indices.append(index)
+
+		# 处理每个矩形区域
+		for position_h_w in face_data["rects"]:
+			# 复制基础顶点并进行调整
+			var ver = base_ver.duplicate()
+			var pos_offset = position_h_w[0]
+			var size_offset = position_h_w[1]
+
+			# 应用X轴偏移
+			for idx in adjust_x_indices:
+				var v = ver[idx]
+				ver[idx] = Vector3(
+					v.x + (size_offset.x if merge_axis_x == "x" else 0),
+					v.y + (size_offset.x if merge_axis_x == "y" else 0),
+					v.z + (size_offset.x if merge_axis_x == "z" else 0)
+				)
+
+			# 应用Y轴偏移
+			for idx in adjust_y_indices:
+				var v = ver[idx]
+				ver[idx] = Vector3(
+					v.x + (size_offset.y if merge_axis_y == "x" else 0),
+					v.y + (size_offset.y if merge_axis_y == "y" else 0),
+					v.z + (size_offset.y if merge_axis_y == "z" else 0)
+				)
+
+			# 添加顶点数据
 			for face_idx in face_index:
-				var index = faces[face_idx]
-				
-				# 添加三个顶点并设置UV
-				for i in range(3):
-					var vertex = ver[index[i]]
-					var uv = calculate_uv(vertex, index[3])
-					surfacetool.set_normal(index[3])
-					surfacetool.set_uv(uv)
-					surfacetool.add_vertex(vertex + position_h_w[0])
-					
+				var indices = faces[face_idx]
+				var normal = indices[3]
+
+				for i in 3:
+					var vertex = ver[indices[i]] + pos_offset
+					surfacetool.set_normal(normal)
+					surfacetool.set_uv(calculate_uv(ver[indices[i]], normal))
+					surfacetool.add_vertex(vertex)
+
 	surfacetool.generate_tangents()
 	array_mesh.mesh = surfacetool.commit()
 	collision.shape = array_mesh.mesh.create_trimesh_shape()
+
+# 浮点数近似相等比较
+func is_equal_approx(a, b):
+	return abs(a - b) < 0.0001
