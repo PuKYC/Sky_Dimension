@@ -9,6 +9,6 @@
 [node name="World" parent="." instance=ExtResource("1_0xm2m")]
 
 [node name="Player" parent="." groups=["Player"] instance=ExtResource("2_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.92148, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.105, 0)
 
 [node name="UI" parent="." instance=ExtResource("3_h2yge")]
