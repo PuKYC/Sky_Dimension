@@ -107,7 +107,7 @@ func merge_faces(block_culled_faces: Dictionary) -> Dictionary:
 			
 			var axis_value = block_position[face["axis"]]
 			var rects_on_axis = face["rects"]
-			var merge_axis_x = face["merge_axis_x"]  # 合并方向轴（例如x/z）
+			var merge_axis_x = face["merge_axis_x"]
 			var merge_axis_y = face["merge_axis_y"]
 			# 初始化轴值对应的矩形列表
 			if not rects_on_axis.has(axis_value):
@@ -141,6 +141,60 @@ func merge_faces(block_culled_faces: Dictionary) -> Dictionary:
 			# 无法合并时添加新矩形
 			if not merged:
 				rects_on_axis[axis_value].append([block_position, Vector2.ZERO])
+				
+	# 竖向合并处理
+	for face_name in face_groups:
+		var face = face_groups[face_name]
+		var rects_on_axis = face["rects"]
+		var merge_axis_x = face["merge_axis_x"]
+		var merge_axis_y = face["merge_axis_y"]
+		
+		# 遍历每个轴向层（如每个z层）
+		for axis_value in rects_on_axis:
+			var rects = rects_on_axis[axis_value]
+			var x_groups = {}
+			
+			# 按横向起始和宽度分组
+			for rect in rects:
+				var pos = rect[0]
+				var size = rect[1]
+				var x_key = str(pos[merge_axis_x]) + "_" + str(size.x)
+				if not x_groups.has(x_key):
+					x_groups[x_key] = []
+				x_groups[x_key].append(rect)
+			
+			var merged_rects = []
+			for group_key in x_groups:
+				var group = x_groups[group_key]
+				# 按纵向起始排序
+				group.sort_custom(func(a, b): return a[0][merge_axis_y] < b[0][merge_axis_y])
+				
+				var i = 0
+				while i < group.size():
+					var current_rect = group[i]
+					var current_y = current_rect[0][merge_axis_y]
+					var current_height = current_rect[1].y
+					
+					# 尝试合并后续可连接的矩形
+					var j = i + 1
+					while j < group.size():
+						var next_rect = group[j]
+						var next_y = next_rect[0][merge_axis_y]
+						
+						# 检查纵向是否连续
+						if next_y == current_y + current_height + 1:
+							current_height += next_rect[1].y + 1
+							j += 1
+						else:
+							break
+					
+					# 更新合并后的尺寸
+					current_rect[1].y = current_height
+					merged_rects.append(current_rect)
+					i = j
+			
+			# 更新当前轴向层的矩形列表
+			rects_on_axis[axis_value] = merged_rects
 	
 	var return_faces = {
 		"FRONT":  {"axis": "z", "merge_axis_x": "x", "merge_axis_y": "y", "rects": []},
@@ -194,7 +248,7 @@ func set_world(list: Array):
 		var adjust_y_indices = []
 		for index in base_ver.size():
 			var vertex = base_ver[index]
-			if is_equal_approx(face_offset - vertex[axis] * 2, 0):
+			if face_offset - vertex[axis] * 2 == 0:
 				if vertex[merge_axis_x] > 0:
 					adjust_x_indices.append(index)
 				if vertex[merge_axis_y] > 0:
@@ -235,11 +289,9 @@ func set_world(list: Array):
 					surfacetool.set_normal(normal)
 					surfacetool.set_uv(calculate_uv(ver[indices[i]], normal))
 					surfacetool.add_vertex(vertex)
+					
+		
 
 	surfacetool.generate_tangents()
 	array_mesh.mesh = surfacetool.commit()
 	collision.shape = array_mesh.mesh.create_trimesh_shape()
-
-# 浮点数近似相等比较
-func is_equal_approx(a, b):
-	return abs(a - b) < 0.0001
