@@ -34,15 +34,16 @@ func generate_circle(circle_center: Vector3, radius: int) -> Array:
 	return world_list
 
 #生成世界
-func generate_world() -> Array:
-	return generate_circle(Vector3(0, 0, 0), 30)
-
+func generate_world():
+	var time = Time.get_ticks_usec()
+	world = generate_circle(Vector3(0, 0, 0), 300)
+	add_block(Vector3(0, 1, 0), 1)
+	array_world.set_world(world)
+	print("生成世界耗时：", (Time.get_ticks_usec()-time)/1000.0/1000.0)
+	
 func add_block(posi:Vector3, id:int):
 	world[0].append(posi)
 	world[1].append(id)
 
 func _ready() -> void:
 	array_world.blocks = blocks
-	world = generate_world()
-	add_block(Vector3(0, 1, 0), 1)
-	array_world.set_world(world)

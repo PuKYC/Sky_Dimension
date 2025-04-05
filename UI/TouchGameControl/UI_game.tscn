@@ -1,12 +1,13 @@
-[gd_scene load_steps=8 format=3 uid="uid://cru7bls2kuvmw"]
+[gd_scene load_steps=9 format=3 uid="uid://cru7bls2kuvmw"]
 
 [ext_resource type="Texture2D" uid="uid://ccffh0je0va6t" path="res://icon.svg" id="1_aalgr"]
 [ext_resource type="Script" uid="uid://cn2l2ryheu4fc" path="res://UI/TouchGameControl/extends/joystick_panel.gd" id="1_y5eyt"]
 [ext_resource type="Script" uid="uid://bdbetsldkt81o" path="res://UI/TouchGameControl/extends/up.gd" id="2_dk3lh"]
 [ext_resource type="Script" uid="uid://dd11ho3jjgahq" path="res://UI/TouchGameControl/extends/down.gd" id="4_i678u"]
 [ext_resource type="Script" uid="uid://daehab7du7slg" path="res://UI/TouchGameControl/extends/rotation.gd" id="4_wojv6"]
+[ext_resource type="Script" uid="uid://dpxnijik1b2xu" path="res://UI/TouchGameControl/set.gd" id="6_dk3lh"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_567tx"]
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_wojv6"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wsnd7"]
 
@@ -19,22 +20,22 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 0
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_567tx")
+theme_override_styles/panel = SubResource("StyleBoxLine_wojv6")
 script = ExtResource("4_wojv6")
 metadata/_custom_type_script = "uid://ciqx4lhpdty1p"
 metadata/_edit_use_anchors_ = true
 
 [node name="UP" type="Panel" parent="Rotation"]
 layout_mode = 1
-anchors_preset = -1
+anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 0.393
+anchor_top = 0.5
 anchor_right = 0.5
-anchor_bottom = 0.393
-offset_left = -12.8004
-offset_top = -60.0
-offset_right = 115.2
-offset_bottom = 68.0
+anchor_bottom = 0.5
+offset_left = -13.4376
+offset_top = -108.0
+offset_right = 114.563
+offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(0.8, 0.8)
@@ -46,10 +47,6 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -2.04651
-offset_top = -2.44999
-offset_right = -2.04651
-offset_bottom = -2.44999
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("1_aalgr")
@@ -119,4 +116,22 @@ offset_bottom = 96.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_aalgr")
+
+[node name="set" type="Panel" parent="."]
+offset_left = 31.0
+offset_top = 33.0
+offset_right = 159.0
+offset_bottom = 161.0
+scale = Vector2(0.8, 0.8)
+script = ExtResource("6_dk3lh")
+metadata/_custom_type_script = "uid://ciqx4lhpdty1p"
+
+[node name="TextureRect" type="TextureRect" parent="set"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 texture = ExtResource("1_aalgr")
