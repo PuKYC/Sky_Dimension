@@ -8,6 +8,10 @@ var touch_index := -1
 
 @onready var Player = get_tree().get_first_node_in_group("Player")
 
+signal set_on_control_started()
+signal set_on_control_updated()
+signal set_on_control_ended()
+
 func _input(event):
 	if handle_input(event):
 		get_viewport().set_input_as_handled()
@@ -38,14 +42,17 @@ func start_control(event: InputEventScreenTouch):
 	touch_index = event.index
 	is_dragging = true
 	on_control_started(event)
+	emit_signal("set_on_control_started")
 
 func update_control(event: InputEventScreenDrag):
 	on_control_updated(event)
+	emit_signal("set_on_control_updated")
 
 func end_control():
 	is_dragging = false
 	touch_index = -1
 	on_control_ended()
+	emit_signal("set_on_control_ended")
 
 # 需要子类实现的方法
 func on_control_started(_event: InputEventScreenTouch):
