@@ -81,10 +81,11 @@ func calculate_uv(vertex: Vector3, normal: Vector3) -> Vector2:
 
 #确认面是否需要剔除
 func determine_culled_faces(block_positions: Array) -> Dictionary:
+	var time = Time.get_ticks_usec()
 	var position_set = {}
 	for pos in block_positions[0]:
 		position_set[pos] = true
-				
+	
 	var culled_faces = {}
 	for key in block_positions[1]:
 		if not culled_faces.has(key):
@@ -103,6 +104,7 @@ func determine_culled_faces(block_positions: Array) -> Dictionary:
 		if culled_mask == 63:
 			continue
 		culled_faces[id][pos] = culled_mask
+	print("面剔除耗时：", (Time.get_ticks_usec()-time)/1000.0/1000.0)
 	return culled_faces
 
 func merge_faces(block_culled_faces: Dictionary) -> Dictionary:
@@ -130,8 +132,6 @@ func merge_faces(block_culled_faces: Dictionary) -> Dictionary:
 
 			var axis_value = block_position[face["axis"]]
 			var rects_on_axis = face["rects"]
-			var merge_axis_x = face["merge_axis_x"]
-			var merge_axis_y = face["merge_axis_y"]
 			# 初始化轴值对应的矩形列表
 			if not rects_on_axis.has(axis_value):
 				rects_on_axis[axis_value] = []
@@ -264,7 +264,7 @@ func merge_faces(block_culled_faces: Dictionary) -> Dictionary:
 				list.append(n)
 		return_faces[face]["rects"] = list
 	
-	print("面剔除耗时：", (Time.get_ticks_usec()-time)/1000.0/1000.0)
+	print("面合并耗时：", (Time.get_ticks_usec()-time)/1000.0/1000.0)
 	
 	return return_faces
 
