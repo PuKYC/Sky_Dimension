@@ -1,0 +1,8 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://bwolbuda1r5c2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jqqvn"]
+bg_color = Color(0, 0, 0, 0.756863)
+
+[resource]
+Label/font_sizes/font_size = 30
+TabContainer/styles/panel = SubResource("StyleBoxFlat_jqqvn")
