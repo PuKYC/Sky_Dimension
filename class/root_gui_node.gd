@@ -1,14 +1,12 @@
 extends Control
-
-signal open_set_op
-
-func _on_set_pressed() -> void:
-	emit_signal("open_set_op")
-	pass # Replace with function body.
+class_name Root_gui
 
 # 递归设置子节点的 process 状态
 func set_children_process(node: Node, enabled: bool):
-	node.process_mode = Node.PROCESS_MODE_DISABLED
+	if enabled:
+		node.process_mode = Node.PROCESS_MODE_INHERIT
+	elif not enabled:
+		node.process_mode = Node.PROCESS_MODE_DISABLED
 	for child in node.get_children():
 		set_children_process(child, enabled)  # 递归处理子节点
 
