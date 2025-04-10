@@ -6,7 +6,7 @@ var touch_index := -1
 
 @export var active_visible := false
 
-@onready var Player = get_tree().get_first_node_in_group("Player")
+@onready var connect = get_tree().get_first_node_in_group("connect")
 
 func _input(event):
 	if handle_input(event):
@@ -32,6 +32,8 @@ func is_point_in_control_area(_position: Vector2) -> bool:
 	return control_point_in_area(self, _position)
 
 func control_point_in_area(_node, _position: Vector2) -> bool:
+	if _node is TouchScreenButton:
+		return Rect2(_node.global_position, _node.texture_normal.get_size()*_node.scale).has_point(_position)
 	return Rect2(_node.global_position, _node.size).has_point(_position)
 
 func start_control(event: InputEventScreenTouch):
