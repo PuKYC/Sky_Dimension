@@ -8,7 +8,8 @@ var world = []
 #方块列表
 var blocks = {
 	0:["泥土", "res://World/block_png/coarse_dirt.png"],
-	1:["草方块", "res://World/block_png/green_concrete.png"]
+	1:["草方块", "res://World/block_png/green_concrete.png"],
+	2:["石头", "res://World/block_png/leaves_birch_opaque.png"]
 }
 
 
@@ -38,6 +39,7 @@ func generate_world():
 	var time = Time.get_ticks_usec()
 	world = generate_circle(Vector3(0, 0, 0), 300)
 	add_block(Vector3(0, 1, 0), 1)
+	add_block(Vector3(0, 2, 0), 2)
 	array_world.set_world(world)
 	print("生成世界耗时：", (Time.get_ticks_usec()-time)/1000.0/1000.0)
 	

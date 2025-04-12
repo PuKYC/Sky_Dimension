@@ -268,18 +268,52 @@ func merge_faces(block_culled_faces: Dictionary) -> Dictionary:
 	
 	return return_faces
 
+func set_Texture2DArray() -> Texture2DArray:
+	var image_list = []
+	for index in blocks.keys():
+		var texture2D = load(blocks[index][1])
+		var image = texture2D.get_image()
+		image_list.append(image)
+		
+	var texture2Darray := Texture2DArray.new()
+	texture2Darray.create_from_images(image_list)
+	
+	return texture2Darray
 
+# 将 32 位整型转换为 4 字节的 PackedByteArray（小端序）
+func int_to_bytes(value: int) -> PackedByteArray:
+	var bytes = PackedByteArray()
+	# 按小端序（低位在前）拆分字节
+	bytes.append((value >> 0) & 0xFF)  # 最低位字节
+	bytes.append((value >> 8) & 0xFF)
+	bytes.append((value >> 16) & 0xFF)
+	bytes.append((value >> 24) & 0xFF) # 最高位字节
+	return bytes
+
+# 将 4 字节转换为浮点数
+func bytes_to_float(bytes: PackedByteArray) -> float:
+	# 创建 PackedByteArray 并解码为浮点数
+	var buffer = PackedByteArray(bytes)
+	return buffer.decode_float(0) # 从第0字节开始解码
+
+# 将 32 位整型转换为浮点数（直接二进制拷贝）
+func int_to_float(value: int) -> float:
+	var bytes = int_to_bytes(value)
+	return bytes_to_float(bytes)
 
 func set_world(list: Array):
 	var culled_faces = determine_culled_faces(list)
-		
+	
+	var surfacetool = SurfaceTool.new()
 	var mesh = ArrayMesh.new()
-	var base_material = preload("res://World/block_png/world.material")
-		
+	
+	array_mesh.material_override.set_shader_parameter("texture_array", set_Texture2DArray())
+	
+	surfacetool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	surfacetool.set_custom_format(0, SurfaceTool.CUSTOM_R_FLOAT)
+	
 	for id in culled_faces.keys():
 		var merge_faces_dictionary = merge_faces(culled_faces[id])
-		var surfacetool = SurfaceTool.new()
-		surfacetool.begin(Mesh.PRIMITIVE_TRIANGLES)
 		for face in merge_faces_dictionary:
 			var face_data = merge_faces_dictionary[face]
 			var axis = face_data["axis"]
@@ -288,7 +322,7 @@ func set_world(list: Array):
 			var face_offset = FACE_OFFSETS[face][axis]
 			var face_index = [FaceMask[face] * 2, FaceMask[face] * 2 + 1]
 
-					# 预计算需要调整的顶点索引
+			# 预计算需要调整的顶点索引
 			var adjust_x_indices = []
 			var adjust_y_indices = []
 			for index in base_ver.size():
@@ -333,14 +367,11 @@ func set_world(list: Array):
 						var vertex = ver[indices[i]] + pos_offset
 						surfacetool.set_normal(normal)
 						surfacetool.set_uv(calculate_uv(ver[indices[i]], normal))
+						surfacetool.set_custom(0, Color(int_to_float(id), 0, 0))
 						surfacetool.add_vertex(vertex)
-			
+		
 		surfacetool.generate_tangents()
-		mesh = surfacetool.commit(mesh)
-			
-		var material = base_material.duplicate(true)  # 深度复制材质实例
-		material.albedo_texture = load(blocks[id][1])
-		mesh.surface_set_material(id, material)
+	mesh = surfacetool.commit()
 		
 	array_mesh.mesh = mesh
 	collision.shape = array_mesh.mesh.create_trimesh_shape()

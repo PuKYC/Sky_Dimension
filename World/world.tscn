@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://c5vy5ivxkg8nm"]
+[gd_scene load_steps=5 format=3 uid="uid://c5vy5ivxkg8nm"]
 
 [ext_resource type="Script" uid="uid://but16gxpit87d" path="res://World/world.gd" id="1_j8job"]
 [ext_resource type="Script" uid="uid://d24ktl7imb3ld" path="res://World/array_world.gd" id="2_3f78f"]
+[ext_resource type="Material" uid="uid://ct23rfxn0vypo" path="res://World/block_png/world.material" id="3_j8job"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_j8job"]
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_j8job")
@@ -13,3 +16,5 @@ script = ExtResource("2_3f78f")
 [node name="collision" type="CollisionShape3D" parent="array_world"]
 
 [node name="array_mesh" type="MeshInstance3D" parent="array_world"]
+material_override = ExtResource("3_j8job")
+mesh = SubResource("BoxMesh_j8job")

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dc0cf41vtx2n7"
-path="res://.godot/imported/green_concrete.png-3ec5b8fb7acd2ae15c110553910c3ff9.ctex"
+uid="uid://bx6ey2h11geol"
+path="res://.godot/imported/leaves_birch_opaque.png-728de7ab9fbb89a0022a9e1aadbc8fbe.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://World/block_png/green_concrete.png"
-dest_files=["res://.godot/imported/green_concrete.png-3ec5b8fb7acd2ae15c110553910c3ff9.ctex"]
+source_file="res://World/block_png/leaves_birch_opaque.png"
+dest_files=["res://.godot/imported/leaves_birch_opaque.png-728de7ab9fbb89a0022a9e1aadbc8fbe.ctex"]
 
 [params]
 
@@ -31,4 +31,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=0
+detect_3d/compress_to=1
