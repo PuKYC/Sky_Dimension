@@ -7,7 +7,7 @@ var value
 @onready var input = $TabContainer
 @onready var button = $TabContainer/Button
 @onready var check = $TabContainer/CheckButton
-@onready var connect = get_tree().get_first_node_in_group("connect")
+@onready var root_connect = get_tree().get_first_node_in_group("root_connect")
 
 func add_input_type(is_set_name: String, v):
 	is_name = is_set_name
@@ -16,7 +16,7 @@ func add_input_type(is_set_name: String, v):
 	match typeof(v):
 		TYPE_STRING:
 			input.current_tab = 0
-			button.pressed.connect(Callable(connect, value))
+			button.pressed.connect(Callable(root_connect, value))
 			
 			
 		TYPE_BOOL:

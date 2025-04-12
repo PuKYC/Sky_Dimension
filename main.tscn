@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://byn1lstipdql6" path="res://Player/Player.tscn" id="2_h2yge"]
 [ext_resource type="PackedScene" uid="uid://dqclwxcl6cypf" path="res://UI/ui.tscn" id="3_h2yge"]
 
-[node name="Main" type="Node3D" groups=["connect"]]
+[node name="Main" type="Node3D" groups=["root_connect"]]
 script = ExtResource("1_1bvp3")
 
 [node name="World" parent="." instance=ExtResource("1_0xm2m")]

@@ -83,16 +83,36 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxEmpty_wojv6")
 script = ExtResource("2_y5eyt")
-vertical_clamp = Vector2(-0.787, 1.396)
 
-[node name="top" type="TouchScreenButton" parent="VBoxContainer/HBoxContainer/Rotation"]
-position = Vector2(222, 158)
+[node name="Control" type="Control" parent="VBoxContainer/HBoxContainer/Rotation"]
+layout_mode = 1
+anchor_left = 0.451
+anchor_top = 0.418
+anchor_right = 0.451
+anchor_bottom = 0.418
+offset_left = -0.458008
+offset_top = -0.318008
+offset_right = -0.458008
+offset_bottom = -0.318008
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="top" type="TouchScreenButton" parent="VBoxContainer/HBoxContainer/Rotation/Control"]
 scale = Vector2(7, 7)
 texture_normal = ExtResource("4_v31eg")
 texture_pressed = ExtResource("5_5d2ul")
 
-[node name="down" type="TouchScreenButton" parent="VBoxContainer/HBoxContainer/Rotation"]
-position = Vector2(221, 342)
+[node name="Control2" type="Control" parent="VBoxContainer/HBoxContainer/Rotation"]
+layout_mode = 1
+anchor_left = 0.451
+anchor_top = 1.719
+anchor_right = 0.451
+anchor_bottom = 1.719
+offset_top = -551.0
+offset_bottom = -551.0
+grow_vertical = 0
+
+[node name="down" type="TouchScreenButton" parent="VBoxContainer/HBoxContainer/Rotation/Control2"]
 scale = Vector2(7, 7)
 texture_normal = ExtResource("4_v31eg")
 texture_pressed = ExtResource("5_5d2ul")
@@ -100,7 +120,7 @@ texture_pressed = ExtResource("5_5d2ul")
 [connection signal="open_set_op" from="." to="VBoxContainer/HBoxContainer/JoystickPanel" method="on_control_ended"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer2/set" to="." method="_on_set_pressed"]
 [connection signal="released" from="VBoxContainer/HBoxContainer2/set" to="." method="_on_set_released"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/Rotation/top" to="VBoxContainer/HBoxContainer/Rotation" method="_on_top_pressed"]
-[connection signal="released" from="VBoxContainer/HBoxContainer/Rotation/top" to="VBoxContainer/HBoxContainer/Rotation" method="_on_top_released"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/Rotation/down" to="VBoxContainer/HBoxContainer/Rotation" method="_on_down_pressed"]
-[connection signal="released" from="VBoxContainer/HBoxContainer/Rotation/down" to="VBoxContainer/HBoxContainer/Rotation" method="_on_down_released"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Rotation/Control/top" to="VBoxContainer/HBoxContainer/Rotation" method="_on_top_pressed"]
+[connection signal="released" from="VBoxContainer/HBoxContainer/Rotation/Control/top" to="VBoxContainer/HBoxContainer/Rotation" method="_on_top_released"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Rotation/Control2/down" to="VBoxContainer/HBoxContainer/Rotation" method="_on_down_pressed"]
+[connection signal="released" from="VBoxContainer/HBoxContainer/Rotation/Control2/down" to="VBoxContainer/HBoxContainer/Rotation" method="_on_down_released"]

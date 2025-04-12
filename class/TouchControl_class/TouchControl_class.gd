@@ -4,9 +4,7 @@ class_name TouchControlBase
 var is_dragging := false
 var touch_index := -1
 
-@export var active_visible := false
-
-@onready var connect = get_tree().get_first_node_in_group("connect")
+@onready var root_connect = get_tree().get_first_node_in_group("root_connect")
 
 func _input(event):
 	if handle_input(event):
