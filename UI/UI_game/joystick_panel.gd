@@ -19,11 +19,11 @@ func on_control_updated(event: InputEventScreenDrag):
 
 func on_control_ended():
 		handle.position = background.size * 0.5 * background.scale - handle.size * 0.5 * handle.scale
-		connect.set_move_level_input(Vector2.ZERO)
+		root_connect.set_move_level_input(Vector2.ZERO)
 		delta = Vector2.ZERO
 
 func handle_move(event):
 		delta = (event.position - center).limit_length(handle_max_distance) if (event.position - center).length()>deadzone else Vector2.ZERO
 		handle.global_position = center + delta - handle.size * 0.5 * handle.scale
-		connect.set_move_level_input(delta / handle_max_distance)
+		root_connect.set_move_level_input(delta / handle_max_distance)
 		

@@ -9,22 +9,24 @@ var err = cfg.load("res://UI/set_UI/Development.cfg")
 signal exit_set_op
 
 func _on_exit_pressed() -> void:
-	emit_signal("exit_set_op")
-	
+		emit_signal("exit_set_op")
+
 
 func _on_set_type_item_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
 	set_option.current_tab = index
-	
+
 
 func _ready() -> void:
 	# 遍历所有 section
 	for section in cfg.get_sections():
-		set_type.add_item(section, load("res://icon.svg"))
-		
-		var set_option_list = {}
-		for option in cfg.get_section_keys(section):
-			set_option_list[option] = cfg.get_value(section, option)
+			set_type.add_item(section, load("res://icon.svg"))
+
+			var set_option_list = {}
+			for option in cfg.get_section_keys(section):
+					set_option_list[option] = cfg.get_value(section, option)
+
+			var options = load("res://UI/set_UI/Option/Option_mian.tscn").instantiate()
+			set_option.add_child(options)
+			options.add_option(set_option_list)
 			
-		var options = load("res://UI/set_UI/Option/Option_mian.tscn").instantiate()
-		set_option.add_child(options)
-		options.add_option(set_option_list)
+	set_type.select(0)

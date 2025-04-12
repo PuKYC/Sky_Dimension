@@ -277,11 +277,11 @@ func set_world(list: Array):
 	var base_material = preload("res://World/block_png/world.material")
 		
 	for id in culled_faces.keys():
-		var merge_faces = merge_faces(culled_faces[id])
+		var merge_faces_dictionary = merge_faces(culled_faces[id])
 		var surfacetool = SurfaceTool.new()
 		surfacetool.begin(Mesh.PRIMITIVE_TRIANGLES)
-		for face in merge_faces:
-			var face_data = merge_faces[face]
+		for face in merge_faces_dictionary:
+			var face_data = merge_faces_dictionary[face]
 			var axis = face_data["axis"]
 			var merge_axis_x = face_data["merge_axis_x"]
 			var merge_axis_y = face_data["merge_axis_y"]
