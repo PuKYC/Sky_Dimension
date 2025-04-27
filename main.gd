@@ -3,8 +3,6 @@ extends Node3D
 @onready var world = $World
 @onready var player = $Player
 
-func Overload_world():
-	world.generate_world()
 
 # 外部更新输入（由摇杆调用）
 func set_move_level_input(input: Vector2):
@@ -18,6 +16,9 @@ func set_verticale_up_input(input: float):
 	
 func set_verticale_down_input(input: float):
 	player.direction_verticale_down = input
+
+func get_player_position() -> Vector3:
+	return player.position
 
 func get_camera_rotation() -> Vector3:
 	return player.camera.rotation 

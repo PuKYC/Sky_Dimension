@@ -4,7 +4,7 @@ extends Root_gui
 @onready var set_type = $VBoxContainer/main_set/Panel/set_type
 
 var cfg = ConfigFile.new()
-var err = cfg.load("res://UI/set_UI/Development.cfg")
+var err = cfg.load("res://Development.cfg")
 
 signal exit_set_op
 

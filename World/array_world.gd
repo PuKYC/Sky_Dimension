@@ -294,7 +294,7 @@ func int_to_bytes(value: int) -> PackedByteArray:
 func bytes_to_float(bytes: PackedByteArray) -> float:
 	# 创建 PackedByteArray 并解码为浮点数
 	var buffer = PackedByteArray(bytes)
-	return buffer.decode_float(0) # 从第0字节开始解码
+	return buffer.decode_float(0)
 
 # 将 32 位整型转换为浮点数（直接二进制拷贝）
 func int_to_float(value: int) -> float:

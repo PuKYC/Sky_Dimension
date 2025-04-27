@@ -24,5 +24,3 @@ mesh = SubResource("CapsuleMesh_q3lat")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_l2ndj")
-
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
