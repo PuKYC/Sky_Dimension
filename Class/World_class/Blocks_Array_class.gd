@@ -1,9 +1,9 @@
-## 方块的集合
+## 方块种类的集合
 ## 
 ## 存放如何渲染
 ## 以及如何交互
 extends Resource
-class_name Blocks_Array
+class_name Block_Types
 
 ## 存放所有的方块信息
 ## 

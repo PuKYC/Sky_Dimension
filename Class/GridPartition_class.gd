@@ -18,7 +18,7 @@ func insert(object, aabb: AABB) -> void:
 	# 如果已存在则先移除旧数据
 	if object_map.has(object):
 		remove(object)
-	
+		
 	# 计算覆盖的单元格坐标
 	var cell_coords = _get_cells(aabb)
 	
@@ -84,13 +84,13 @@ func query(aabb: AABB) -> Array:
 
 ## 辅助方法：计算AABB覆盖的单元格坐标
 func _get_cells(aabb: AABB) -> PackedVector3Array:
-	var start = Vector3i(
+	var start = Vector3(
 		floor(aabb.position.x / cell_size.x),
 		floor(aabb.position.y / cell_size.y),
 		floor(aabb.position.z / cell_size.z)
 	)
 	
-	var end = Vector3i(
+	var end = Vector3(
 		floor(aabb.end.x / cell_size.x),
 		floor(aabb.end.y / cell_size.y),
 		floor(aabb.end.z / cell_size.z)
@@ -98,15 +98,18 @@ func _get_cells(aabb: AABB) -> PackedVector3Array:
 	
 	var coords = PackedVector3Array()
 	
-	# 遍历三维网格范围生成所有单元格坐标
+	## 遍历三维网格范围生成所有单元格坐标
 	for x in range(start.x, end.x + 1):
 		for y in range(start.y, end.y + 1):
 			for z in range(start.z, end.z + 1):
-				coords.append(Vector3i(x, y, z))
+				coords.append(Vector3(x, y, z))
 	
 	return coords
 	
 ## 是否有cell
 func is_get_cell(cell:Vector3i):
 	return cells.has(cell)
-		
+
+## 获取cell的坐标
+func get_cell_position(cell: Vector3i):
+	return cell * cell_size

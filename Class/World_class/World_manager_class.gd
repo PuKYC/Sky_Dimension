@@ -2,7 +2,7 @@
 extends GridPartition
 class_name World_manager
 
-@export var blocks_array: Blocks_Array
+@export var blocks_array: Block_Types
 
 func _init() -> void:
 	cell_size = Vector3i.ONE * 4096
@@ -19,7 +19,7 @@ func query_floatingisland_cell(aabb: AABB) -> Dictionary:
 	var floatingisland_array = query(aabb)
 	var floatingisland_cell := {}
 	for floatingisland in floatingisland_array:
-		floatingisland_cell.merge(floatingisland.reture_partial_islands(aabb))
+		floatingisland_cell.merge(floatingisland.return_partial_islands(aabb))
 	
 	return floatingisland_cell
 

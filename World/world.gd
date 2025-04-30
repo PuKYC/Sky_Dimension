@@ -7,7 +7,7 @@ var world_manager: World_manager = World_manager.new()
 var location: Location = Location.new(Vector3.ONE*128)
 
 func _ready() -> void:
-	world_manager.generate_floatingisland(Vector3.ZERO, Vector3.ONE*150)
+	world_manager.generate_floatingisland(Vector3.ZERO, Vector3.ONE*128)
 	root_connect.ready.connect(start_run)
 
 # 确保所有节点初始化完成再运行
