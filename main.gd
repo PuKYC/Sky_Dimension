@@ -4,7 +4,6 @@ extends Node3D
 @onready var player = $Player
 
 
-# 外部更新输入（由摇杆调用）
 func set_move_level_input(input: Vector2):
 	player.direction_level = Vector2(input.x, input.y)
 

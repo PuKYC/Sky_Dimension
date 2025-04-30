@@ -1,20 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://c5vy5ivxkg8nm"]
+[gd_scene load_steps=3 format=3 uid="uid://c5vy5ivxkg8nm"]
 
 [ext_resource type="Script" uid="uid://but16gxpit87d" path="res://World/world.gd" id="1_j8job"]
-[ext_resource type="Script" uid="uid://cadso6ft3yb37" path="res://Class/World_class/Render_class.gd" id="3_3f78f"]
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_8a836"]
-size = Vector2(1, 1)
-
-[sub_resource type="MultiMesh" id="MultiMesh_j8job"]
-transform_format = 1
-mesh = SubResource("PlaneMesh_8a836")
+[ext_resource type="Script" uid="uid://cadso6ft3yb37" path="res://Class/World_class/Render_class.gd" id="2_8a836"]
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_j8job")
 metadata/_custom_type_script = "uid://bv3yhn8l407du"
 
-[node name="render" type="MultiMeshInstance3D" parent="."]
-multimesh = SubResource("MultiMesh_j8job")
-script = ExtResource("3_3f78f")
+[node name="Render" type="Node3D" parent="."]
+script = ExtResource("2_8a836")
 metadata/_custom_type_script = "uid://cadso6ft3yb37"

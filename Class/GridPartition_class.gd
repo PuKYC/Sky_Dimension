@@ -79,6 +79,7 @@ func query(aabb: AABB) -> Array:
 				if not seen.get(obj, false):
 					seen[obj] = true
 					result.append(obj)
+					
 	return result
 
 ## 辅助方法：计算AABB覆盖的单元格坐标
@@ -104,8 +105,8 @@ func _get_cells(aabb: AABB) -> PackedVector3Array:
 				coords.append(Vector3i(x, y, z))
 	
 	return coords
-
-## 辅助方法： 判断区块是否已经生成
-func _cell_is_generate(cell_position: Vector3i) -> bool:
-	return cells.has(cell_position)
 	
+## 是否有cell
+func is_get_cell(cell:Vector3i):
+	return cells.has(cell)
+		
