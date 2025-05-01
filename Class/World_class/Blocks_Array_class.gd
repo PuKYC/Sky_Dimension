@@ -14,7 +14,7 @@ class_name Block_Types
 var block_ID: Dictionary
 var block_name: PackedStringArray
 var block_size: PackedVector3Array
-var block_material: Array[PackedInt32Array]
+var block_material: Array[PackedByteArray]
 
 var img_array: Array
 	
@@ -46,7 +46,7 @@ func add_block(ID:int, name:String, size:Vector3, materials: PackedStringArray):
 	block_index[0] = _find_and_add_block_name(name)
 	block_index[1] = _find_and_add_block_size(size)
 	
-	var block_texture2d_array:PackedInt32Array
+	var block_texture2d_array:PackedByteArray
 	for material in materials:
 		var texture2d = load(material)
 		block_texture2d_array.append(_find_and_add_block_material(texture2d.get_image()))

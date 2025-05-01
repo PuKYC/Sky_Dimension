@@ -83,6 +83,7 @@ func query(aabb: AABB) -> Array:
 	return result
 
 ## 辅助方法：计算AABB覆盖的单元格坐标
+## 注意:PackedVector3Array不能存储Vector3i
 func _get_cells(aabb: AABB) -> PackedVector3Array:
 	var start = Vector3(
 		floor(aabb.position.x / cell_size.x),

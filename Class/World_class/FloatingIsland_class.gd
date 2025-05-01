@@ -9,9 +9,13 @@ var generation_date: Dictionary = {}
 
 func _init(new_floatingisland_AABB: AABB):
 	floatingisland_AABB = new_floatingisland_AABB
+	
+	# 初始化分区
 	cell_size = Vector3i.ONE * 32
 	cells = {}
 	object_map = {}
+	
+	# 分区初始化后进行操作
 	generation_date["generation_floatingisland_cells"] = _get_cells(new_floatingisland_AABB)
 
 ## 返回AABB与空岛区块的交集 ｛ V3(区块的世界坐标)：(区块方块) ｝
@@ -28,7 +32,7 @@ func return_partial_islands(aabb_detect: AABB) -> Dictionary:
 
 ## 把cell从局部坐标系转换到全局坐标系
 func cell_local_to_global(cell:Vector3i):
-	return Vector3(cell) + floatingisland_AABB.position
+	return Vector3(cell)*Vector3(cell_size) + floatingisland_AABB.position
 
 ## 把AABB盒从全局转换到该坐标系
 func aabb_global_to_local(aabb_detect: AABB) -> AABB:
@@ -50,7 +54,7 @@ func generate_cell(cell_posi: Vector3) -> bool:
 		
 	if cell_posi in generation_date["generation_floatingisland_cells"]:
 		var cell_posi_v3i = Vector3i(cell_posi)
-		cells[cell_posi_v3i] = Blocks_Array.new(1)
+		cells[cell_posi_v3i] = VoxelGrid.new(1)
 		return true
 		
 	return false

@@ -25,7 +25,7 @@ func start_location_update():
 	
 	# 使用 lambda 确保每次触发时动态调用
 	location_time.timeout.connect(
-		func(): 
+		func():
 			location.location_update(root_connect.get_player_position(), world_manager)
 	)
 	
