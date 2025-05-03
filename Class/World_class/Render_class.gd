@@ -6,6 +6,10 @@
 extends Node3D
 class_name Render
 
+@onready var block_types: Block_Types:
+	set(block_type):
+		block_types = block_type
+		
 var main_multimeshinstance3D: MultiMeshInstance3D = MultiMeshInstance3D.new()
 
 class VoxelGrids_Render_Process:
@@ -22,6 +26,8 @@ class VoxelGrids_Render_Process:
 		var key = _input_keys[index]
 		var value = _input_data[key]
 		
+		var voxelgrid_process_array
+		
 		mutex.lock()
 		_output_floatingisland_blocks_dictionary[key] = value
 		mutex.unlock()
@@ -32,7 +38,6 @@ class VoxelGrids_Render_Process:
 			_input_keys.size()
 		)
 		WorkerThreadPool.wait_for_group_task_completion(task_id)
-		
 
 func _ready() -> void:
 	add_child(main_multimeshinstance3D)

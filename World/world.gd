@@ -2,7 +2,7 @@ extends Node3D
 
 @onready var root_connect = get_tree().get_first_node_in_group("root_connect")
 @onready var render: Render = $Render
-
+@export var block_types: Block_Types
 var world_manager: World_manager = World_manager.new()
 var location: Location = Location.new(Vector3.ONE*128)
 

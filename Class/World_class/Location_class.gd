@@ -15,5 +15,6 @@ func location_update(player_posi: Vector3, floatingisland_gridpartition: World_m
 	location_aabb.position += player_posi - location_aabb.get_center()
 	location_floatingisland_cell = floatingisland_gridpartition.query_floatingisland_cell(location_aabb)
 	
+	print(location_floatingisland_cell)
 	emit_signal("location_floatingisland_updeta", location_floatingisland_cell)
 	

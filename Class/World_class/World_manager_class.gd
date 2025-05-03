@@ -2,8 +2,6 @@
 extends GridPartition
 class_name World_manager
 
-@export var blocks_array: Block_Types
-
 func _init() -> void:
 	cell_size = Vector3i.ONE * 4096
 	cells = {}

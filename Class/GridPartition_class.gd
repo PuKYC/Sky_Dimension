@@ -3,12 +3,12 @@ extends RefCounted
 class_name GridPartition
 
 ## 分区大小
-var cell_size: Vector3i
+var cell_size: Vector3
 
-var cells: Dictionary    # { Vector3i: [object...] }
+var cells: Dictionary    # { Vector3: [object...] }
 var object_map: Dictionary    # { object: PackedVector3Array }
 
-func _init(gridpartition_cell_size: Vector3i):
+func _init(gridpartition_cell_size: Vector3):
 	cell_size = gridpartition_cell_size
 	cells = {}
 	object_map = {}
@@ -108,9 +108,9 @@ func _get_cells(aabb: AABB) -> PackedVector3Array:
 	return coords
 	
 ## 是否有cell
-func is_get_cell(cell:Vector3i):
+func is_get_cell(cell:Vector3):
 	return cells.has(cell)
 
 ## 获取cell的坐标
-func get_cell_position(cell: Vector3i):
+func get_cell_position(cell: Vector3):
 	return cell * cell_size
