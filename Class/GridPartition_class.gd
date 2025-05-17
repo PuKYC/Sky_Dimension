@@ -85,17 +85,8 @@ func query(aabb: AABB) -> Array:
 ## 辅助方法：计算AABB覆盖的单元格坐标
 ## 注意:PackedVector3Array不能存储Vector3i
 func _get_cells(aabb: AABB) -> PackedVector3Array:
-	var start = Vector3(
-		floor(aabb.position.x / cell_size.x),
-		floor(aabb.position.y / cell_size.y),
-		floor(aabb.position.z / cell_size.z)
-	)
-	
-	var end = Vector3(
-		floor(aabb.end.x / cell_size.x),
-		floor(aabb.end.y / cell_size.y),
-		floor(aabb.end.z / cell_size.z)
-	)
+	var start = floor(aabb.position/cell_size)
+	var end = floor(aabb.end/cell_size)
 	
 	var coords = PackedVector3Array()
 	
@@ -106,10 +97,18 @@ func _get_cells(aabb: AABB) -> PackedVector3Array:
 				coords.append(Vector3(x, y, z))
 	
 	return coords
-	
+
+func get_cell(cell: Vector3) -> Array:
+	if cells.has(cell):
+		return cells[cell]
+	return []
+
 ## 是否有cell
 func is_get_cell(cell:Vector3):
 	return cells.has(cell)
+
+func has_point(point:Vector3) -> Vector3:
+	return floor(point/cell_size)
 
 ## 获取cell的坐标
 func get_cell_position(cell: Vector3):

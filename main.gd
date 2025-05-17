@@ -2,13 +2,13 @@ extends Node3D
 
 @onready var world = $World
 @onready var player = $Player
-
+@onready var camera = $Player/camera_position
 
 func set_move_level_input(input: Vector2):
 	player.direction_level = Vector2(input.x, input.y)
 
 func set_see_rotation(set_see_rotation_input: Vector3):
-	player.camera.rotation = set_see_rotation_input
+	camera.rotation = set_see_rotation_input
 
 func set_verticale_up_input(input: float):
 	player.direction_verticale_up = input
@@ -20,4 +20,4 @@ func get_player_position() -> Vector3:
 	return player.position
 
 func get_camera_rotation() -> Vector3:
-	return player.camera.rotation 
+	return camera.rotation

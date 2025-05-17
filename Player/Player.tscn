@@ -13,12 +13,6 @@ material = SubResource("StandardMaterial3D_3qydi")
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_3qydi")
 
-[node name="camera" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.673, 0)
-
-[node name="camera_position" type="Camera3D" parent="camera"]
-current = true
-
 [node name="MultiMeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_q3lat")
 

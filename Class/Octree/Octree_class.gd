@@ -12,9 +12,9 @@ func insert(obj: Object):
 	root.insert(obj, obj_aabb)
 
 ## 查询区域内的物体（自动去重）
-func query_aabb(query_aabb: AABB) -> Array:
+func query_aabb(query_AABB: AABB) -> Array:
 	var result = []
-	root.query(query_aabb, result)
+	root.query(query_AABB, result)
 	# 去重处理
 	var unique = {}
 	for item in result:
