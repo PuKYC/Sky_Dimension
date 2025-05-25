@@ -10,5 +10,5 @@ func _notification(what: int):
 		var current_global_position = global_position
 		if current_global_position != previous_global_position:
 			previous_global_position = current_global_position
-			
+
 			emit_signal("position_update", current_global_position)

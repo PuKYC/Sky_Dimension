@@ -18,7 +18,7 @@ func add_floatingisland(aabb:AABB):
 # 生成区块中的空岛占位符
 func generate_grid(cell:Vector3):
 	if not cellsState.has(cell):
-		add_floatingisland(AABB(cell, Vector3.ONE*128))
+		add_floatingisland(AABB(get_cell_position(cell), Vector3.ONE*128))
 		
 		cellsState[cell] = true
 	
@@ -41,7 +41,6 @@ func location_grid(position:Vector3) -> Dictionary:
 		floatingisland.generate()
 		floatingisland.generate_mesh(Vector3.ZERO)
 		locationgrid[floatingisland] = floatingisland.get_cells_deta(aabb.intersection(floatingisland.floatingisland_AABB))
-		
 		
 		
 	return locationgrid

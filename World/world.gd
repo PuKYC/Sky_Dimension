@@ -23,5 +23,7 @@ func _on_camera_position_position_update(posi: Vector3) -> void:
 	var cell_posi = world_manager.has_point(posi)
 	if cell_posi != player_posi:
 		render.add_mesh(world_manager.location_grid(posi))
+		#print(world_manager.location_grid(posi))
+		render.generate_mash()
 		player_posi = cell_posi
 	

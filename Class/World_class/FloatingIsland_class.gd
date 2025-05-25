@@ -33,7 +33,9 @@ func generate():
 		return
 	
 	for cell_posi in _block_Grid._get_cells(aabb_global_to_local(floatingisland_AABB)):
-		_block_Grid.cells[cell_posi] = [VoxelGrid.new(1)]
+		var vox := VoxelGrid.new()
+		vox.fill(1)
+		_block_Grid.cells[cell_posi] = [vox]
 
 	_state = IslandState.OBSERVED
 	
@@ -50,15 +52,23 @@ func generate_mesh(cell: Vector3):
 	if voxelgrid == null:
 		return
 	
-	var cell_tool = VoxelGridMeshTool.new(block_types)
+	var cell_tool = VoxelGridMeshTool.new()
 	# 执行面剔除，只记录需要渲染的面
 	
 	var cells: Array[VoxelGrid]
-	for index in cell_tool.FACE_ID:
-		cells.append(get_voxelgrid(cell+index))
-		
-	_block_Grid_mash[cell] = cell_tool.generate_voxelgrid_mesh(voxelgrid, cells)
-
+	cells.resize(6)
+	
+	cells[VoxelGridMeshTool.FRONT] = get_voxelgrid(cell+Vector3.FORWARD)
+	cells[VoxelGridMeshTool.BACK] = get_voxelgrid(cell+Vector3.BACK)
+	cells[VoxelGridMeshTool.TOP] = get_voxelgrid(cell+Vector3.UP)
+	cells[VoxelGridMeshTool.BOTTOM] = get_voxelgrid(cell+Vector3.DOWN)
+	cells[VoxelGridMeshTool.RIGHT] = get_voxelgrid(cell+Vector3.RIGHT)
+	cells[VoxelGridMeshTool.LEFT] = get_voxelgrid(cell+Vector3.LEFT)
+	
+	_block_Grid_mash[cell] = cell_tool.generate_voxelgrid_mesh(voxelgrid, cells, block_types, _block_Grid.get_cell_position(cell))
+	
+	#print(_block_Grid_mash[cell][Mesh.ARRAY_VERTEX])
+	
 # 根据AABB获取区块
 func get_cells_deta(aabb:AABB) -> Dictionary:
 	var mashs: Dictionary
