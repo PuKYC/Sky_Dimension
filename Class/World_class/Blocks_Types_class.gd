@@ -16,6 +16,8 @@ var block_name: PackedStringArray
 var block_material: Array[PackedByteArray]
 
 var img_array: Array
+var texture2d_array:Texture2DArray
+var mat:Material
 
 # 修改后的辅助函数（直接操作成员变量）
 func _find_and_add_block_name(v: String) -> int:
@@ -84,3 +86,19 @@ func get_block_texture2d_id(id: int, normal:Vector3) -> int:
 func get_block_transparency(id: int) -> int:
 	return block_ID[id][2]
 	
+func pack_t_array():
+	var image_list = []
+	for index in img_array.size():
+		var texture2D = img_array[index]
+		image_list.append(texture2D)
+		
+	var texture2Darray := Texture2DArray.new()
+	texture2Darray.create_from_images(image_list)
+	
+	RenderingServer.global_shader_parameter_set("block", texture2Darray)
+	
+func get_material() -> Material:
+	if mat == null:
+		mat = load("res://World/block_png/world.material")
+		#mat.set_shader_parameter("texture_array", texture2d_array)
+	return mat

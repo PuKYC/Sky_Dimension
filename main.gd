@@ -21,3 +21,8 @@ func get_player_position() -> Vector3:
 
 func get_camera_rotation() -> Vector3:
 	return camera.rotation
+
+func _process(delta):
+	var pos = player.position
+	# 显示保留1位小数的坐标（按需调整格式）
+	$UI/Label.text = "Position: (%.1f, %.1f, %.1f)" % [pos.x, pos.y, pos.z]

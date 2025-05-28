@@ -1,5 +1,5 @@
 ## 网格分区的godot实现
-extends RefCounted
+extends Node3D
 class_name GridPartition
 
 ## 分区大小

@@ -76,3 +76,10 @@ textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="mobile"
 global_illumination/gi/use_half_resolution=true
 occlusion_culling/use_occlusion_culling=true
+
+[shader_globals]
+
+block={
+"type": "sampler2DArray",
+"value": ""
+}

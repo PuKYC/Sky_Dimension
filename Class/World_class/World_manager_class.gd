@@ -4,21 +4,28 @@ class_name World_manager
 
 var location:int
 var cellsState: Dictionary
+var location_floatingisland:Dictionary
 var block_types: Block_Types
 
-func _init(block_type: Block_Types) -> void:
+func _init() -> void:
 	super._init(Vector3.ONE*4096)
-	block_types = block_type
 	cellsState = {}
-	location = 128
+	location = 4000
 
 func add_floatingisland(aabb:AABB):
-	insert(FloatingIsland.new(aabb, block_types), aabb)
+	var floatingisland = FloatingIsland.new()
+	floatingisland.position = aabb.position
+	floatingisland.block_types = block_types
+	floatingisland.floatingisland_AABB = aabb
+	floatingisland.name = str(hash(floatingisland))
+	insert(floatingisland, aabb)
 
 # 生成区块中的空岛占位符
 func generate_grid(cell:Vector3):
 	if not cellsState.has(cell):
-		add_floatingisland(AABB(get_cell_position(cell), Vector3.ONE*128))
+		for x in 2:
+			for z in 2:
+				add_floatingisland(AABB(get_cell_position(cell) + Vector3(x, 0, z)*1500, Vector3.ONE*128))
 		
 		cellsState[cell] = true
 	
@@ -27,10 +34,9 @@ func generate_grids(cells:PackedVector3Array):
 	for grid in cells:
 		generate_grid(grid)
 
-func location_grid(position:Vector3) -> Dictionary:
+func location_grid(position:Vector3):
 	var aabb = AABB(Vector3.ZERO, location*Vector3.ONE)
 	var big_aabb = AABB(Vector3.ZERO, location*Vector3.ONE + Vector3.ONE*4096*2)
-	var locationgrid:Dictionary 
 	
 	aabb.position = position - aabb.get_center()
 	big_aabb.position = position - big_aabb.get_center()
@@ -38,9 +44,16 @@ func location_grid(position:Vector3) -> Dictionary:
 	generate_grids(_get_cells(big_aabb))
 	
 	for floatingisland in query(aabb):
+		var f_aabb = aabb.abs().intersection(floatingisland.floatingisland_AABB)
+		print(aabb.abs().intersection(floatingisland.floatingisland_AABB))
+		if f_aabb.size == Vector3.ZERO:
+			#print(floatingisland.position)
+			continue
 		floatingisland.generate()
-		floatingisland.generate_mesh(Vector3.ZERO)
-		locationgrid[floatingisland] = floatingisland.get_cells_deta(aabb.intersection(floatingisland.floatingisland_AABB))
+		floatingisland.generate_meshs()
+		floatingisland.get_cells_deta(f_aabb)
+		if not location_floatingisland.has(floatingisland):
+			add_child(floatingisland)
+			#print("add ", floatingisland)
+			location_floatingisland[floatingisland] = true
 		
-		
-	return locationgrid

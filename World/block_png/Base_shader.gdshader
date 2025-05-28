@@ -1,7 +1,7 @@
 shader_type spatial;
 
 // 声明Texture2DArray
-uniform sampler2DArray texture_array : source_color, filter_nearest;
+global uniform sampler2DArray block : source_color, filter_nearest;
 
 varying flat uint index;
 
@@ -11,6 +11,6 @@ void vertex() {
 
 // 片元着色器中使用数据
 void fragment() {
-    vec4 color = texture(texture_array, vec3(UV, float(index)));
+    vec4 color = texture(block, vec3(UV, float(index)));
     ALBEDO = color.rgb;
 }
