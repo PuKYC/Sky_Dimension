@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://bjc7adej1ujtl"]
+
+[ext_resource type="Theme" uid="uid://bwolbuda1r5c2" path="res://UI/set_UI/set_UI.tres" id="1_oxi63"]
+[ext_resource type="Script" uid="uid://do63igp1pkxo1" path="res://UI/set_UI/Option/option_mian.gd" id="2_oxi63"]
+
+[node name="Options" type="ScrollContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_oxi63")
+script = ExtResource("2_oxi63")
+metadata/_tab_index = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
