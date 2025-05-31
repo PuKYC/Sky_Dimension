@@ -31,8 +31,8 @@ public:
     Ref<ArrayMesh> generate_voxelgrid_mesh(const Ref<VoxelGrid> voxelgtid, const Array &voxelgrid_array, const Object *block_types, Vector3 offset) const;
 
 private:
-    static const PackedVector3Array get_base_face_offsets();
-    static const Array get_base_faces();
+    static const PackedVector3Array& get_base_face_offsets();
+    static const Array& get_base_faces();
     static const PackedVector3Array get_base_block_ver();
 
     Vector2 calculate_uv(Vector3 vertex, Vector3 normal) const;

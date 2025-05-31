@@ -26,8 +26,8 @@ public:
     ~VoxelGridRLE() override = default;
 
     // Compression/Decompression
-    void compress(const PackedByteArray &grid);
-    PackedByteArray decompress() const;
+    void compress(const PackedInt32Array &grid);
+    PackedInt32Array decompress() const;
 
     // Conversion
     Ref<VoxelGrid> to_voxel_grid();

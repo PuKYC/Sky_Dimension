@@ -13,7 +13,7 @@ class VoxelGrid : public RefCounted
 
 private:
 
-    PackedByteArray grid;
+    PackedInt32Array grid;
 
     int get_index(Vector3i v3)const;
     bool is_valid(Vector3i v3) const;
@@ -42,5 +42,5 @@ public:
     static Ref<VoxelGrid> from_rle(const Ref<VoxelGridRLE> vgr);
 
     // 测试使用
-    PackedByteArray get_raw_data();
+    PackedInt32Array get_raw_data();
 };

@@ -51,7 +51,7 @@ void VoxelGridRLE::build_index()
     }
 }
 
-void VoxelGridRLE::compress(const PackedByteArray &grid)
+void VoxelGridRLE::compress(const PackedInt32Array &grid)
 {
     compressed_data.clear();
     if (grid.is_empty())
@@ -80,9 +80,9 @@ void VoxelGridRLE::compress(const PackedByteArray &grid)
     build_index();
 }
 
-PackedByteArray VoxelGridRLE::decompress() const
+PackedInt32Array VoxelGridRLE::decompress() const
 {
-    PackedByteArray grid;
+    PackedInt32Array grid;
     grid.resize(64 * 64 * 64);
 
     int ptr = 0; // Godot通常使用有符号int

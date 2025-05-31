@@ -25,7 +25,7 @@ func generate_grid(cell:Vector3):
 	if not cellsState.has(cell):
 		for x in 2:
 			for z in 2:
-				add_floatingisland(AABB(get_cell_position(cell) + Vector3(x, 0, z)*1500, Vector3.ONE*128))
+				add_floatingisland(AABB(get_cell_position(cell) + Vector3(x, 0, z)*2000, Vector3.ONE*512))
 		
 		cellsState[cell] = true
 	
@@ -34,18 +34,18 @@ func generate_grids(cells:PackedVector3Array):
 	for grid in cells:
 		generate_grid(grid)
 
-func location_grid(position:Vector3):
+func location_grid(pos:Vector3):
 	var aabb = AABB(Vector3.ZERO, location*Vector3.ONE)
 	var big_aabb = AABB(Vector3.ZERO, location*Vector3.ONE + Vector3.ONE*4096*2)
 	
-	aabb.position = position - aabb.get_center()
-	big_aabb.position = position - big_aabb.get_center()
+	aabb.position = pos - aabb.get_center()
+	big_aabb.position = pos - big_aabb.get_center()
 	
 	generate_grids(_get_cells(big_aabb))
 	
 	for floatingisland in query(aabb):
-		var f_aabb = aabb.abs().intersection(floatingisland.floatingisland_AABB)
-		print(aabb.abs().intersection(floatingisland.floatingisland_AABB))
+		var f_aabb = aabb.intersection(floatingisland.floatingisland_AABB)
+		# print(aabb,  " ", floatingisland.floatingisland_AABB, " ", aabb.abs().intersection(floatingisland.floatingisland_AABB))
 		if f_aabb.size == Vector3.ZERO:
 			#print(floatingisland.position)
 			continue

@@ -21,7 +21,7 @@ func start_run():
 	pass
 
 func _on_camera_position_position_update(posi: Vector3) -> void:
-	var cell_posi = world_manager.has_point(posi)
+	var cell_posi = posi/32
 	if cell_posi != player_posi:
 		world_manager.location_grid(posi)
 		player_posi = cell_posi

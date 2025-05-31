@@ -78,7 +78,7 @@ Ref<VoxelGrid> VoxelGrid::from_rle(const Ref<VoxelGridRLE> vgr)
     return grid;
 }
 
-PackedByteArray VoxelGrid::get_raw_data()
+PackedInt32Array VoxelGrid::get_raw_data()
 {
     return grid.duplicate();
 }

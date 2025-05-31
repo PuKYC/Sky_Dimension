@@ -21,60 +21,65 @@ void VoxelGridMeshTool::_bind_methods()
     ClassDB::bind_integer_constant("VoxelGridMeshTool", "FACE_ID", "BOTTOM", BOTTOM);
 }
 
-const PackedVector3Array VoxelGridMeshTool::get_base_face_offsets()
+const PackedVector3Array &VoxelGridMeshTool::get_base_face_offsets()
 {
-    static PackedVector3Array base_face_offsets;
-    if (base_face_offsets.is_empty())
+    static const PackedVector3Array base_face_offsets = []()
     {
-        base_face_offsets.resize(6);
-        base_face_offsets[FACE_ID::FRONT] = Vector3(0, 0, -1);  // 前
-        base_face_offsets[FACE_ID::BACK] = Vector3(0, 0, 1);    // 后
-        base_face_offsets[FACE_ID::LEFT] = Vector3(-1, 0, 0);   // 左
-        base_face_offsets[FACE_ID::RIGHT] = Vector3(1, 0, 0);   // 右
-        base_face_offsets[FACE_ID::TOP] = Vector3(0, 1, 0);     // 上
-        base_face_offsets[FACE_ID::BOTTOM] = Vector3(0, -1, 0); // 下
-    }
-    return base_face_offsets.duplicate();
+        PackedVector3Array arr;
+        arr.resize(6);
+        arr[FACE_ID::FRONT] = Vector3(0, 0, -1);  // 前
+        arr[FACE_ID::BACK] = Vector3(0, 0, 1);    // 后
+        arr[FACE_ID::LEFT] = Vector3(-1, 0, 0);   // 左
+        arr[FACE_ID::RIGHT] = Vector3(1, 0, 0);   // 右
+        arr[FACE_ID::TOP] = Vector3(0, 1, 0);     // 上
+        arr[FACE_ID::BOTTOM] = Vector3(0, -1, 0); // 下
+        return arr;
+    }();
+    return base_face_offsets;
 };
 
-const Array VoxelGridMeshTool::get_base_faces()
+const Array &VoxelGridMeshTool::get_base_faces()
 {
-    PackedVector3Array base_face_offsets = VoxelGridMeshTool::get_base_face_offsets();
-    Array base_faces;
-
-    // 定义面数据: [顶点索引1, 顶点索引2, 顶点索引3, 面ID]
-    const int face_data[12][4] = {
-        // FRONT
-        {5, 4, 7, FACE_ID::FRONT},
-        {5, 7, 6, FACE_ID::FRONT},
-        // BACK
-        {0, 1, 2, FACE_ID::BACK},
-        {0, 2, 3, FACE_ID::BACK},
-        // LEFT
-        {1, 5, 6, FACE_ID::LEFT},
-        {1, 6, 2, FACE_ID::LEFT},
-        // RIGHT
-        {4, 0, 3, FACE_ID::RIGHT},
-        {4, 3, 7, FACE_ID::RIGHT},
-        // TOP
-        {3, 2, 6, FACE_ID::TOP},
-        {3, 6, 7, FACE_ID::TOP},
-        // BOTTOM
-        {4, 5, 1, FACE_ID::BOTTOM},
-        {4, 1, 0, FACE_ID::BOTTOM}};
-
-    base_faces.resize(12);
-    for (int i = 0; i < 12; i++)
+    static const Array base_faces = []()
     {
-        Array face;
-        face.resize(4);
-        face[0] = face_data[i][0];
-        face[1] = face_data[i][1];
-        face[2] = face_data[i][2];
-        face[3] = base_face_offsets[face_data[i][3]];
-        base_faces[i] = face;
-    }
+        const PackedVector3Array &base_face_offsets = VoxelGridMeshTool::get_base_face_offsets();
+        Array base_faces_arr;
 
+        // 定义面数据: [顶点索引1, 顶点索引2, 顶点索引3, 面ID]
+        const int face_data[12][4] = {
+            // FRONT
+            {5, 4, 7, FACE_ID::FRONT},
+            {5, 7, 6, FACE_ID::FRONT},
+            // BACK
+            {0, 1, 2, FACE_ID::BACK},
+            {0, 2, 3, FACE_ID::BACK},
+            // LEFT
+            {1, 5, 6, FACE_ID::LEFT},
+            {1, 6, 2, FACE_ID::LEFT},
+            // RIGHT
+            {4, 0, 3, FACE_ID::RIGHT},
+            {4, 3, 7, FACE_ID::RIGHT},
+            // TOP
+            {3, 2, 6, FACE_ID::TOP},
+            {3, 6, 7, FACE_ID::TOP},
+            // BOTTOM
+            {4, 5, 1, FACE_ID::BOTTOM},
+            {4, 1, 0, FACE_ID::BOTTOM}};
+
+        base_faces_arr.resize(12);
+        for (int i = 0; i < 12; i++)
+        {
+            Array face;
+            face.resize(4);
+            face[0] = face_data[i][0];
+            face[1] = face_data[i][1];
+            face[2] = face_data[i][2];
+            face[3] = base_face_offsets[face_data[i][3]];
+            base_faces_arr[i] = face;
+        }
+
+        return base_faces_arr;
+    }();
     return base_faces;
 };
 
@@ -127,73 +132,82 @@ Vector2 VoxelGridMeshTool::calculate_uv(Vector3 vertex, Vector3 normal) const
     {
         u = 1.0 - u;
     };
-    return Vector2(u+0.25, v+0.25);
+    return Vector2(u + 0.25, v + 0.25);
 };
 
 Dictionary VoxelGridMeshTool::determine_culled_faces(const Ref<VoxelGrid> block_grid, const Array &voxelgrid_array) const
 {
     Dictionary culled_faces;
+    const int SIZE = block_grid->SIZE;
+    const int TOTAL_BLOCKS = SIZE * SIZE * SIZE;
+    const PackedVector3Array &face_offsets = get_base_face_offsets();
 
-    PackedVector3Array face_offset = get_base_face_offsets();
-
-    for (int x = 0; x < block_grid->SIZE; x++)
+    // 预加载相邻区块
+    Ref<VoxelGrid> neighbors[6];
+    for (int i = 0; i < 6; i++)
     {
-        for (int y = 0; y < block_grid->SIZE; y++)
+        neighbors[i] = voxelgrid_array[i];
+    }
+
+    // 使用一维索引优化缓存访问
+    for (int idx = 0; idx < TOTAL_BLOCKS; idx++)
+    {
+        int x = idx % SIZE;
+        int y = (idx / SIZE) % SIZE;
+        int z = idx / (SIZE * SIZE);
+
+        Vector3i pos(x, y, z);
+        int id = block_grid->get_block(pos);
+        if (id == 0)
+            continue;
+
+        int culled_mask = 0;
+
+        // 遍历所有面
+        for (int i = 0; i < 6; i++)
         {
-            for (int z = 0; z < block_grid->SIZE; z++)
+            Vector3 adjacent_pos = pos + face_offsets[i];
+            int adjacent_id = block_grid->get_block(adjacent_pos);
+
+            // 处理边界情况
+            if (adjacent_id == -1)
             {
-                Vector3i pos(x, y, z);
-                int id = block_grid->get_block(pos);
-                if (id == 0)
-                    continue;
-
-                int culled_mask = 0;
-
-                // 遍历所有面
-                for (int i = 0; i < 6; i++)
+                Ref<VoxelGrid> neighbor_grid = voxelgrid_array[i];
+                if (neighbor_grid.is_valid())
                 {
-                    Vector3 adjacent_pos = pos + face_offset[i];
-                    int adjacent_id = block_grid->get_block(adjacent_pos);
-
-                    // 处理边界情况
-                    if (adjacent_id == -1)
-                    {
-                        Ref<VoxelGrid> neighbor_grid = voxelgrid_array[i];
-                        if (neighbor_grid.is_valid())
-                        {
-                            // 转换到相邻区块的坐标
-                            Vector3 neighbor_pos = adjacent_pos - face_offset[i] * block_grid->SIZE;
-                            adjacent_id = neighbor_grid->get_block(neighbor_pos);
-                        }
-                        else
-                        {
-                            adjacent_id = 0;
-                        }
-                    }
-                    // 设置掩码位
-                    if (adjacent_id == 0)
-                    {
-                        culled_mask |= (1 << i);
-                    }
-                    if (culled_mask == 0)
-                        continue;
-
-                    // 更新结果字典
-                    if (!culled_faces.has(id))
-                    {
-                        culled_faces[id] = Dictionary();
-                    }
-                    Dictionary id_dict = culled_faces[id];
-                    id_dict[pos] = culled_mask;
-
-                    // culled_faces[pos] = culled_mask;
+                    // 转换到相邻区块的坐标
+                    Vector3 neighbor_pos = adjacent_pos - face_offsets[i] * block_grid->SIZE;
+                    adjacent_id = neighbor_grid->get_block(neighbor_pos);
+                }
+                else
+                {
+                    adjacent_id = 0;
                 }
             }
+
+            // 设置掩码位
+            if (adjacent_id == 0)
+            {
+                culled_mask |= (1 << i);
+            }
+            if (culled_mask == 0)
+                continue;
+
+            // 更新结果字典
+            if (!culled_faces.has(id))
+            {
+                culled_faces[id] = Dictionary();
+            }
+            Dictionary id_dict = culled_faces[id];
+            id_dict[pos] = culled_mask;
+
+            // culled_faces[pos] = culled_mask;
         }
     }
     // UtilityFunctions::print("面剔除 ", culled_faces);
-    return culled_faces;
+return culled_faces;
 }
+
 
 void quick_sort(Array &arr, const int &merge_axis)
 {
@@ -336,83 +350,84 @@ Dictionary VoxelGridMeshTool::merge_faces(const Dictionary &block_culled_faces) 
                     groups[key] = Array();
                 }
                 groups[key].append(rect);
-            }
-
-            Array merged_rects;
-            for (const KeyValue<String, Array> &group_entry : groups)
-            {
-                Array group = group_entry.value;
-
-                // 排序
-                quick_sort(group, merge_axis_x_b);
-
-                int i = 0;
-                while (i < group.size())
-                {
-                    Array current = group[i];
-                    Vector3i current_pos = current[0];
-                    Vector2i current_size = current[1];
-
-                    int j = i + 1;
-                    while (j < group.size())
-                    {
-                        Array next = group[j];
-                        Vector3i next_pos = next[0];
-                        Vector2i next_size = next[1]; // 显式转换Variant到Vector2i
-
-                        if (next_pos[merge_axis_x_b] == current_pos[merge_axis_x_b] + current_size[merge_axis_cross] + 1)
-                        {
-                            current_size[merge_axis_cross] += next_size[merge_axis_cross] + 1; // 现在可以正确访问x成员
-                            j++;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-
-                    current[1] = current_size;
-                    merged_rects.append(current);
-                    i = j;
-                }
-            }
-
-            axis_entry.value = merged_rects;
         }
-    };
 
-    // 横向和纵向合并
-    for (KeyValue<FACE_ID, FaceGroup> &entry : face_groups)
-    {
-        process_merging(entry.value, false); // 横向
-        process_merging(entry.value, true);  // 纵向
-    }
-
-    // 构建返回数据结构
-    Dictionary result;
-    const FACE_ID faces[] = {FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM};
-    for (const FACE_ID &face : faces)
-    {
-        Dictionary face_data;
-        face_data["axis"] = face_groups[face].axis;
-        face_data["merge_axis_x"] = face_groups[face].merge_axis_x;
-        face_data["merge_axis_y"] = face_groups[face].merge_axis_y;
-
-        Array final_rects;
-        for (const KeyValue<int, Array> &axis_entry : face_groups[face].rects)
+        // 合并相邻方块
+        Array merged_rects;
+        for (const KeyValue<String, Array> &group_entry : groups)
         {
-            Array rects = axis_entry.value;
-            for (int i = 0; i < rects.size(); i++)
+            Array group = group_entry.value;
+
+            // 排序
+            quick_sort(group, merge_axis_x_b);
+
+            int i = 0;
+            while (i < group.size())
             {
-                final_rects.append(rects[i]);
+                Array current = group[i];
+                Vector3i current_pos = current[0];
+                Vector2i current_size = current[1];
+
+                int j = i + 1;
+                while (j < group.size())
+                {
+                    Array next = group[j];
+                    Vector3i next_pos = next[0];
+                    Vector2i next_size = next[1]; // 显式转换Variant到Vector2i
+
+                    if (next_pos[merge_axis_x_b] == current_pos[merge_axis_x_b] + current_size[merge_axis_cross] + 1)
+                    {
+                        current_size[merge_axis_cross] += next_size[merge_axis_cross] + 1; // 现在可以正确访问x成员
+                        j++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                current[1] = current_size;
+                merged_rects.append(current);
+                i = j;
             }
         }
 
-        face_data["rects"] = final_rects;
-        result[face] = face_data;
+        axis_entry.value = merged_rects;
     }
+};
+
+// 横向和纵向合并
+for (KeyValue<FACE_ID, FaceGroup> &entry : face_groups)
+{
+    process_merging(entry.value, false); // 横向
+    process_merging(entry.value, true);  // 纵向
+}
+
+// 构建返回数据结构
+Dictionary result;
+const FACE_ID faces[] = {FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM};
+for (const FACE_ID &face : faces)
+{
+    Dictionary face_data;
+    face_data["axis"] = face_groups[face].axis;
+    face_data["merge_axis_x"] = face_groups[face].merge_axis_x;
+    face_data["merge_axis_y"] = face_groups[face].merge_axis_y;
+
+    Array final_rects;
+    for (const KeyValue<int, Array> &axis_entry : face_groups[face].rects)
+    {
+        Array rects = axis_entry.value;
+        for (int i = 0; i < rects.size(); i++)
+        {
+            final_rects.append(rects[i]);
+        }
+    }
+
+    face_data["rects"] = final_rects;
+    result[face] = face_data;
+}
     // UtilityFunctions::print("面合并 ", result);
-    return result;
+return result;
 }
 
 float int_to_float(int id) {
@@ -444,7 +459,7 @@ Ref<ArrayMesh> VoxelGridMeshTool::generate_voxelgrid_mesh(const Ref<VoxelGrid> v
     surfacetool->set_custom_format(0, SurfaceTool::CUSTOM_R_FLOAT);
 
     for (int j = 0; j < 6; ++j)
-{
+    {
         Array face_index = Array::make(j * 2, j * 2 + 1);
 
         for (int i = 0; i < keys.size(); ++i)
@@ -529,7 +544,7 @@ Ref<ArrayMesh> VoxelGridMeshTool::generate_voxelgrid_mesh(const Ref<VoxelGrid> v
                     {
                         int vert_index = indices[v_idx];
                         Vector3 vertex = ver[vert_index].operator Vector3() + pos_offset + offset;
-                        //Vector3 vertex = ver[vert_index].operator Vector3() + pos_offset;
+                        // Vector3 vertex = ver[vert_index].operator Vector3() + pos_offset;
 
                         surfacetool->set_normal(normal);
                         surfacetool->set_uv(calculate_uv(ver[vert_index], normal));
@@ -539,9 +554,7 @@ Ref<ArrayMesh> VoxelGridMeshTool::generate_voxelgrid_mesh(const Ref<VoxelGrid> v
                 }
             }
         }
-
-        
     }
-    //surfacetool->generate_tangents();
+    // surfacetool->generate_tangents();
     return surfacetool->commit();
 }
