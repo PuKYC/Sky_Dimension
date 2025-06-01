@@ -205,9 +205,8 @@ Dictionary VoxelGridMeshTool::determine_culled_faces(const Ref<VoxelGrid> block_
         }
     }
     // UtilityFunctions::print("面剔除 ", culled_faces);
-return culled_faces;
+    return culled_faces;
 }
-
 
 void quick_sort(Array &arr, const int &merge_axis)
 {
@@ -254,6 +253,7 @@ void quick_sort(Array &arr, const int &merge_axis)
 
     if (arr.size() > 0)
     {
+        // UtilityFunctions::print(arr);
         SortHelper::sort(arr, 0, arr.size() - 1, merge_axis);
     }
 }
@@ -261,7 +261,6 @@ void quick_sort(Array &arr, const int &merge_axis)
 Dictionary VoxelGridMeshTool::merge_faces(const Dictionary &block_culled_faces) const
 {
     Array block_positions = block_culled_faces.keys();
-    // UtilityFunctions::print(123456,block_positions);
 
     Dictionary return_faces;
 
@@ -318,66 +317,77 @@ Dictionary VoxelGridMeshTool::merge_faces(const Dictionary &block_culled_faces) 
     }
 
     // 合并处理函数
-    auto process_merging = [](FaceGroup &face, bool vertical)
+auto process_merging = [](FaceGroup &face, bool vertical)
+{
+    HashMap<int, Array> &rects_on_axis = face.rects;
+
+    // 轴映射优化：预先计算所有轴索引
+    const int axis_group = vertical ? face.merge_axis_x : face.merge_axis_y;
+    const int axis_sort = vertical ? face.merge_axis_y : face.merge_axis_x;
+    const int axis_merge = vertical ? 0 : 1; // 0:宽度, 1:高度
+
+    for (KeyValue<int, Array> &axis_entry : rects_on_axis)
     {
-        HashMap<int, Array> &rects_on_axis = face.rects;
-        const int &merge_axis_x_b = vertical ? face.merge_axis_y : face.merge_axis_x;
-        const int &merge_axis_y_b = vertical ? face.merge_axis_x : face.merge_axis_y;
+        // 关键修复：使用只读引用访问原始数据（避免悬空引用）
+        const Array &original_rects = axis_entry.value;
+        const int rect_count = original_rects.size();
 
-        // 定义轴向常量（假设X=0，Y=1）
-        const int MAIN_AXIS = 0;  // 主轴（如水平方向为X）
-        const int CROSS_AXIS = 1; // 次轴（如水平方向为Y）
+        HashMap<Vector2i, Array> groups;
 
-        // 动态切换轴向
-        const int &merge_axis_main = vertical ? CROSS_AXIS : MAIN_AXIS;
-        const int &merge_axis_cross = vertical ? MAIN_AXIS : CROSS_AXIS;
-
-        for (KeyValue<int, Array> &axis_entry : rects_on_axis)
+        // 分组阶段：零复制访问
+        for (int i = 0; i < rect_count; i++)
         {
-            Array &rects = axis_entry.value;
-            HashMap<String, Array> groups;
+            const Array &rect = original_rects[i];
+            const Vector3i &pos = rect[0].operator Vector3i();
+            const Vector2i &size = rect[1].operator Vector2i();
 
-            // 分组
-            for (int i = 0; i < rects.size(); i++)
-            {
-                Array rect = rects[i];
-                Vector3i pos = rect[0];
-                Vector2i size = rect[1];
-
-                String key = String::num_int64(pos[merge_axis_y_b]) + "_" + String::num_int64(size[merge_axis_main]);
-                if (!groups.has(key))
-                {
-                    groups[key] = Array();
-                }
-                groups[key].append(rect);
+            // 使用高效分组方式（自动创建缺失组）
+            const Vector2i key(pos[axis_group], size[axis_merge]);
+            Array &group = groups[key]; // 自动创建空数组（如果不存在）
+            group.append(rect);         // 添加原始Variant引用
         }
 
-        // 合并相邻方块
+        // 合并结果容器
         Array merged_rects;
-        for (const KeyValue<String, Array> &group_entry : groups)
-        {
-            Array group = group_entry.value;
 
-            // 排序
-            quick_sort(group, merge_axis_x_b);
+        // 处理每个分组
+        for (KeyValue<Vector2i, Array> &group_entry : groups)
+        {
+            Array &group = group_entry.value;
+            const int group_size = group.size();
+
+            // 仅当需要时排序 (2+元素)
+            if (group_size > 1)
+            {
+                quick_sort(group, axis_sort);
+            }
 
             int i = 0;
-            while (i < group.size())
+            while (i < group_size)
             {
-                Array current = group[i];
-                Vector3i current_pos = current[0];
-                Vector2i current_size = current[1];
-
+                // 获取当前矩形（使用常量引用避免拷贝）
+                const Array &current = group[i];
+                const Vector3i &current_pos = current[0].operator Vector3i();
+                const Vector2i &current_size_ref = current[1].operator Vector2i();
+                
+                // 需要修改尺寸，创建副本
+                Vector2i current_size = current_size_ref;
+                
+                const int current_start = current_pos[axis_sort];
+                int current_end = current_start + current_size[axis_merge];
                 int j = i + 1;
-                while (j < group.size())
-                {
-                    Array next = group[j];
-                    Vector3i next_pos = next[0];
-                    Vector2i next_size = next[1]; // 显式转换Variant到Vector2i
 
-                    if (next_pos[merge_axis_x_b] == current_pos[merge_axis_x_b] + current_size[merge_axis_cross] + 1)
+                // 合并相邻矩形
+                while (j < group_size)
+                {
+                    const Array &next = group[j];
+                    const Vector3i &next_pos = next[0].operator Vector3i();
+                    const Vector2i &next_size = next[1].operator Vector2i();
+
+                    // 直接比较坐标值
+                    if (next_pos[axis_sort] == current_end + 1)
                     {
-                        current_size[merge_axis_cross] += next_size[merge_axis_cross] + 1; // 现在可以正确访问x成员
+                        current_end += next_size[axis_merge] + 1;
                         j++;
                     }
                     else
@@ -386,51 +396,60 @@ Dictionary VoxelGridMeshTool::merge_faces(const Dictionary &block_culled_faces) 
                     }
                 }
 
-                current[1] = current_size;
-                merged_rects.append(current);
-                i = j;
+                // 更新最终尺寸
+                current_size[axis_merge] = current_end - current_start;
+
+                // 创建新矩形（复用位置数据）
+                Array merged_rect;
+                merged_rect.append(current_pos);  // 原始位置
+                merged_rect.append(current_size); // 新尺寸
+                merged_rects.append(merged_rect);
+
+                i = j; // 跳过已合并项
             }
         }
 
-        axis_entry.value = merged_rects;
+        // 移动语义安全替换原数据
+        axis_entry.value = std::move(merged_rects);
     }
 };
 
-// 横向和纵向合并
-for (KeyValue<FACE_ID, FaceGroup> &entry : face_groups)
-{
-    process_merging(entry.value, false); // 横向
-    process_merging(entry.value, true);  // 纵向
-}
-
-// 构建返回数据结构
-Dictionary result;
-const FACE_ID faces[] = {FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM};
-for (const FACE_ID &face : faces)
-{
-    Dictionary face_data;
-    face_data["axis"] = face_groups[face].axis;
-    face_data["merge_axis_x"] = face_groups[face].merge_axis_x;
-    face_data["merge_axis_y"] = face_groups[face].merge_axis_y;
-
-    Array final_rects;
-    for (const KeyValue<int, Array> &axis_entry : face_groups[face].rects)
+    // 横向和纵向合并
+    for (KeyValue<FACE_ID, FaceGroup> &entry : face_groups)
     {
-        Array rects = axis_entry.value;
-        for (int i = 0; i < rects.size(); i++)
-        {
-            final_rects.append(rects[i]);
-        }
+        process_merging(entry.value, false); // 横向
+        process_merging(entry.value, true);  // 纵向
     }
 
-    face_data["rects"] = final_rects;
-    result[face] = face_data;
-}
+    // 构建返回数据结构
+    Dictionary result;
+    const FACE_ID faces[] = {FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM};
+    for (const FACE_ID &face : faces)
+    {
+        Dictionary face_data;
+        face_data["axis"] = face_groups[face].axis;
+        face_data["merge_axis_x"] = face_groups[face].merge_axis_x;
+        face_data["merge_axis_y"] = face_groups[face].merge_axis_y;
+
+        Array final_rects;
+        for (const KeyValue<int, Array> &axis_entry : face_groups[face].rects)
+        {
+            Array rects = axis_entry.value;
+            for (int i = 0; i < rects.size(); i++)
+            {
+                final_rects.append(rects[i]);
+            }
+        }
+
+        face_data["rects"] = final_rects;
+        result[face] = face_data;
+    }
     // UtilityFunctions::print("面合并 ", result);
-return result;
+    return result;
 }
 
-float int_to_float(int id) {
+float int_to_float(int id)
+{
     float f;
     std::memcpy(&f, &id, sizeof(f)); // 将id的二进制位复制到float
     return f;
