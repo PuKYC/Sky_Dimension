@@ -9,19 +9,21 @@ var block_types:Block_Types
 var _state: IslandState = IslandState.UNOBSERVED
 var floatingisland_AABB: AABB
 
-# 存储网格实例和网格数据
-var _list_Grid_mash:Dictionary # 存储MeshInstance3D节点
-var _block_Grid_mash:Dictionary # 存储ArrayMesh数据
+var _list_Grid_mash:Dictionary
+var _block_Grid_mash:Dictionary
 
 func _init():
 	super._init(Vector3.ONE * 64)
-	_list_Grid_mash = {}
-	_block_Grid_mash = {}
 
 ## 把AABB盒从全局转换到该坐标系
 func aabb_global_to_local(aabb_detect: AABB) -> AABB:
 	aabb_detect.position = aabb_detect.position - floatingisland_AABB.position
 	return aabb_detect
+
+## 更新空岛AABB盒
+func update_floatingisland_aabb():
+	if _state == IslandState.UNOBSERVED:
+		return
 
 ## 生成空岛
 func generate():
@@ -35,29 +37,58 @@ func generate():
 	
 	_state = IslandState.OBSERVED
 
+
 func get_voxelgrid(cell:Vector3) -> VoxelGrid:
 	for element in get_cell(cell):
 		if element is VoxelGrid:
 			return element
 	return null
 
-# 生成网格数据
-func generate_mesh_data(cell: Vector3) -> ArrayMesh:
+func generate_meshs():
+	for cell in cells.keys():
+		generate_mesh(cell)
+
+# 生成区块面实例
+func generate_mesh(cell: Vector3):
+	if _block_Grid_mash.has(cell):
+		return
 	var voxelgrid = get_voxelgrid(cell)
 	if voxelgrid == null:
-		return null
+		return
 	
 	var cell_tool = VoxelGridMeshTool.new()
-	var cells_arr: Array[VoxelGrid] = []
-	cells_arr.resize(6)
+	# 执行面剔除，只记录需要渲染的面
 	
-	cells_arr[VoxelGridMeshTool.FRONT] = get_voxelgrid(cell+Vector3.FORWARD)
-	cells_arr[VoxelGridMeshTool.BACK] = get_voxelgrid(cell+Vector3.BACK)
-	cells_arr[VoxelGridMeshTool.TOP] = get_voxelgrid(cell+Vector3.UP)
-	cells_arr[VoxelGridMeshTool.BOTTOM] = get_voxelgrid(cell+Vector3.DOWN)
-	cells_arr[VoxelGridMeshTool.RIGHT] = get_voxelgrid(cell+Vector3.RIGHT)
-	cells_arr[VoxelGridMeshTool.LEFT] = get_voxelgrid(cell+Vector3.LEFT)
+	var cells: Array[VoxelGrid]
+	cells.resize(6)
 	
-	return cell_tool.generate_voxelgrid_mesh(
-		voxelgrid, cells_arr, block_types, Vector3.ZERO
-	)
+	cells[VoxelGridMeshTool.FRONT] = get_voxelgrid(cell+Vector3.FORWARD)
+	cells[VoxelGridMeshTool.BACK] = get_voxelgrid(cell+Vector3.BACK)
+	cells[VoxelGridMeshTool.TOP] = get_voxelgrid(cell+Vector3.UP)
+	cells[VoxelGridMeshTool.BOTTOM] = get_voxelgrid(cell+Vector3.DOWN)
+	cells[VoxelGridMeshTool.RIGHT] = get_voxelgrid(cell+Vector3.RIGHT)
+	cells[VoxelGridMeshTool.LEFT] = get_voxelgrid(cell+Vector3.LEFT)
+	
+	_block_Grid_mash[cell] = cell_tool.generate_voxelgrid_mesh(voxelgrid, cells, block_types)
+	
+	#print(_block_Grid_mash[cell])
+	
+# 根据AABB获取区块
+func get_cells_deta(aabb:AABB):
+	
+	for mesh in _get_cells(aabb_global_to_local(aabb)):
+		#print(aabb_global_to_local(aabb))
+		#print(_get_cells(aabb_global_to_local(aabb)))
+		var mesh_node = MeshInstance3D.new()
+		
+		if _block_Grid_mash.has(mesh):
+			#print(1)
+			mesh_node.name = "%.1f, %.1f, %.1f" % [mesh.x, mesh.y, mesh.z]
+			mesh_node.mesh = _block_Grid_mash[mesh]
+			mesh_node.position = get_cell_position(mesh)
+			mesh_node.material_override = block_types.get_material()
+			if not _list_Grid_mash.has(mesh):
+				add_child(mesh_node)
+				_list_Grid_mash[mesh] = true
+			
+	

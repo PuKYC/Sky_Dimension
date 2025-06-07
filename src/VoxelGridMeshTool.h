@@ -3,6 +3,7 @@
 #include "godot_cpp/classes/ref_counted.hpp"
 #include "godot_cpp/classes/wrapped.hpp"
 #include <godot_cpp/classes/array_mesh.hpp>
+#include <godot_cpp/templates/hash_map.hpp>
 
 #include "VoxelGrid.h"
 
@@ -28,16 +29,23 @@ public:
 
     float block_size = 0.5;
 
-    Ref<ArrayMesh> generate_voxelgrid_mesh(const Ref<VoxelGrid> voxelgtid, const Array &voxelgrid_array, const Object *block_types, Vector3 offset) const;
+    Ref<ArrayMesh> generate_voxelgrid_mesh(const Ref<VoxelGrid> voxelgtid, const Array &voxelgrid_array, const Object *block_types) const;
 
 private:
-    static const PackedVector3Array& get_base_face_offsets();
-    static const Array& get_base_faces();
-    static const PackedVector3Array get_base_block_ver();
+    static const PackedVector3Array &get_base_face_offsets();
+
+    // 定义面组配置结构
+    struct FaceGroup
+    {
+        int axis;
+        int merge_axis_x;
+        int merge_axis_y;
+        HashMap<int, Array> rects;
+    };
 
     Vector2 calculate_uv(Vector3 vertex, Vector3 normal) const;
-    Dictionary determine_culled_faces(const Ref<VoxelGrid> block_grid, const Array &voxelgrid_array) const;
-    Dictionary merge_faces(const Dictionary& culled_faces) const;
+    HashMap<int, HashMap<Vector3i, int>> determine_culled_faces(const Ref<VoxelGrid> block_grid, const Array &voxelgrid_array) const;
+    HashMap<FACE_ID, FaceGroup> merge_faces(const HashMap<Vector3i, int> &block_culled_faces) const;
 
 protected:
     static void _bind_methods();

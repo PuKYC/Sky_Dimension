@@ -11,7 +11,7 @@ var th = Thread.new()
 func _ready() -> void:
 	root_connect.ready.connect(start_run)
 	block_type = Block_Types.new()
-	block_type.add_block(1, "block", Vector3(1,1,1), ["res://icon.svg"], 0)
+	block_type.add_block(1, "block", Vector3(1,1,1), ["res://World/block_png/leaves_birch_opaque.png"], 0)
 	block_type.pack_t_array()
 	
 	world_manager.block_types = block_type
