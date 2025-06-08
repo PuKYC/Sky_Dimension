@@ -25,7 +25,7 @@ func generate_grid(cell:Vector3):
 	if not cellsState.has(cell):
 		for x in 1:
 			for z in 1:
-				add_floatingisland(AABB(get_cell_position(cell) + Vector3(x, 0, z)*1500, Vector3.ONE*512))
+				add_floatingisland(AABB(get_cell_position(cell) + Vector3(x, 0, z)*1500, Vector3.ONE*62))
 		
 		cellsState[cell] = true
 	

@@ -19,6 +19,8 @@ void VoxelGridMeshTool::_bind_methods()
     ClassDB::bind_integer_constant("VoxelGridMeshTool", "FACE_ID", "RIGHT", RIGHT);
     ClassDB::bind_integer_constant("VoxelGridMeshTool", "FACE_ID", "TOP", TOP);
     ClassDB::bind_integer_constant("VoxelGridMeshTool", "FACE_ID", "BOTTOM", BOTTOM);
+
+    ClassDB::bind_integer_constant("VoxelGridMeshTool", "", "FLAGS", flags);
 }
 
 const PackedVector3Array &VoxelGridMeshTool::get_base_face_offsets()
@@ -43,23 +45,25 @@ Vector2 VoxelGridMeshTool::calculate_uv(Vector3 vertex, Vector3 normal) const
     float u = 0.0;
     float v = 0.0;
 
+    //vertex += Vector3(1, 1, 1);
+
     const PackedVector3Array face_offsets = get_base_face_offsets();
 
     // 根据面法线确定UV映射方式
     if (normal == face_offsets[FRONT] || normal == face_offsets[BACK])
     {
-        u = (-vertex.x + 1) / (2 * 1);
-        v = (-vertex.y + 1) / (2 * 1);
+        u = (vertex.x);
+        v = (vertex.y);
     }
     else if (normal == face_offsets[RIGHT] || normal == face_offsets[LEFT])
     {
-        u = (-vertex.z + 1) / (2 * 1);
-        v = (-vertex.y - 1) / (2 * 1);
+        u = (vertex.z);
+        v = (vertex.y);
     }
     else if (normal == face_offsets[TOP] || normal == face_offsets[BOTTOM])
     {
-        u = (-vertex.x + 1) / (2 * 1);
-        v = (-vertex.z + 1) / (2 * 1);
+        u = (vertex.x);
+        v = (vertex.z);
     };
 
     // 调整反向面的UV方向
@@ -67,7 +71,10 @@ Vector2 VoxelGridMeshTool::calculate_uv(Vector3 vertex, Vector3 normal) const
     {
         u = 1.0 - u;
     };
-    return Vector2(u + 0.25, v + 0.25);
+
+    UtilityFunctions::print(vertex, " ", normal, " ", Vector2(u,v));
+
+    return Vector2(u, v);
 };
 
 HashMap<int, HashMap<Vector3i, int>> VoxelGridMeshTool::determine_culled_faces(const Ref<VoxelGrid> block_grid, const Array &voxelgrid_array) const
@@ -344,7 +351,7 @@ float int_to_float(int id)
     return f;
 }
 
-Ref<ArrayMesh> VoxelGridMeshTool::generate_voxelgrid_mesh(const Ref<VoxelGrid> voxelgtid, const Array &voxelgrid_array, const Object *block_types) const
+Array VoxelGridMeshTool::generate_voxelgrid_mesh(const Ref<VoxelGrid> voxelgtid, const Array &voxelgrid_array, const Object *block_types) const
 {
     // 剔除面计算
     HashMap<int, HashMap<Vector3i, int>> culled_faces = determine_culled_faces(voxelgtid, voxelgrid_array);
@@ -388,15 +395,10 @@ Ref<ArrayMesh> VoxelGridMeshTool::generate_voxelgrid_mesh(const Ref<VoxelGrid> v
 
                     const auto &fg = fece_group.value; // 提前获取引用
 
-                    Vector3 offset = Vector3(0, 0, 0);
-                    offset[fg.axis] = n[fg.axis] / 2;
-                    offset[fg.merge_axis_x] = -0.5;
-                    offset[fg.merge_axis_y] = -0.5;
-
                     // 使用ptrw()直接操作内存，避免set()的函数调用开销
                     Vector3 *w = index.ptrw();
-                    const Vector3 &base = rv[0].operator Vector3() + offset;
-                    const Vector2i &v2 = rv[1].operator Vector2() + Vector2(1, 1);
+                    const Vector3 &base = rv[0];
+                    const Vector2i &v2 = rv[1].operator Vector2();
 
                     // 直接初始化顶点
                     w[0] = base;
@@ -477,7 +479,7 @@ Ref<ArrayMesh> VoxelGridMeshTool::generate_voxelgrid_mesh(const Ref<VoxelGrid> v
     }
 
     if (vec_all.size() == 0)
-        return memnew(ArrayMesh);
+        return Array();
 
     Array arr_in;
     arr_in.resize(Mesh::ARRAY_MAX);
@@ -488,21 +490,8 @@ Ref<ArrayMesh> VoxelGridMeshTool::generate_voxelgrid_mesh(const Ref<VoxelGrid> v
     arr_in[Mesh::ARRAY_NORMAL] = na_all;
     arr_in[Mesh::ARRAY_INDEX] = in_all;
 
-    // UtilityFunctions::print(arr_in);
+    // UtilityFunctions::print(arr_in)
 
-    // 启用：顶点 + 法线 + UV + 自定义属性0 + 索引
-    uint32_t flags =
-        Mesh::ARRAY_FORMAT_VERTEX |
-        Mesh::ARRAY_FORMAT_NORMAL |
-        Mesh::ARRAY_FORMAT_TEX_UV |
-        Mesh::ARRAY_FORMAT_CUSTOM0 | // 启用自定义属性0
-        Mesh::ARRAY_FORMAT_INDEX;
-
-    // 设置CUSTOM0为R_FLOAT格式
-    flags |= (Mesh::ARRAY_CUSTOM_R_FLOAT << Mesh::ARRAY_FORMAT_CUSTOM0_SHIFT);
-
-    Ref<ArrayMesh> a_mesh = memnew(ArrayMesh);
-    a_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arr_in, Array(), Dictionary(), flags);
-
-    return a_mesh;
+    
+    return arr_in;
 }

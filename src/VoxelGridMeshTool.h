@@ -27,9 +27,16 @@ public:
         BOTTOM = 5
     };
 
-    float block_size = 0.5;
+    // 启用：顶点 + 法线 + UV + 自定义属性0 + 索引
+    static const uint32_t flags =
+        Mesh::ARRAY_FORMAT_NORMAL |
+        Mesh::ARRAY_FORMAT_TEX_UV |
+        Mesh::ARRAY_FORMAT_CUSTOM0 | // 启用自定义属性0
+        (Mesh::ARRAY_CUSTOM_R_FLOAT << Mesh::ARRAY_FORMAT_CUSTOM0_SHIFT) |
+        Mesh::ARRAY_FORMAT_INDEX |
+        Mesh::ARRAY_FLAG_COMPRESS_ATTRIBUTES;
 
-    Ref<ArrayMesh> generate_voxelgrid_mesh(const Ref<VoxelGrid> voxelgtid, const Array &voxelgrid_array, const Object *block_types) const;
+    Array generate_voxelgrid_mesh(const Ref<VoxelGrid> voxelgtid, const Array &voxelgrid_array, const Object *block_types) const;
 
 private:
     static const PackedVector3Array &get_base_face_offsets();
