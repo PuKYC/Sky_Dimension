@@ -4,3 +4,9 @@
 .vscode/
 gitvenv/
 /__pycache__
+
+*.o
+*.os
+*.so
+*.lib
+*.out
