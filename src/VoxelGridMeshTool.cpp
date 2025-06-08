@@ -72,7 +72,7 @@ Vector2 VoxelGridMeshTool::calculate_uv(Vector3 vertex, Vector3 normal) const
         u = 1.0 - u;
     };
 
-    UtilityFunctions::print(vertex, " ", normal, " ", Vector2(u,v));
+    //UtilityFunctions::print(vertex, " ", normal, " ", Vector2(u,v));
 
     return Vector2(u, v);
 };

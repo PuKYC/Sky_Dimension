@@ -23,9 +23,9 @@ func add_floatingisland(aabb:AABB):
 # 生成区块中的空岛占位符
 func generate_grid(cell:Vector3):
 	if not cellsState.has(cell):
-		for x in 1:
-			for z in 1:
-				add_floatingisland(AABB(get_cell_position(cell) + Vector3(x, 0, z)*1500, Vector3.ONE*62))
+		for x in 2:
+			for z in 2:
+				add_floatingisland(AABB(get_cell_position(cell) + Vector3(x, 0, z)*1500, Vector3.ONE*512))
 		
 		cellsState[cell] = true
 	

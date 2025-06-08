@@ -81,7 +81,7 @@ func get_cells_deta(aabb:AABB):
 		#print(_get_cells(aabb_global_to_local(aabb)))
 		
 		
-		if _block_Grid_mash.has(mesh) and not _list_Grid_mash.has(mesh) and _block_Grid_mash[mesh] != Array():
+		if _block_Grid_mash.has(mesh) and not _list_Grid_mash.has(mesh) and _block_Grid_mash[mesh].size() != 0:
 			var mesh_n = ArrayMesh.new()
 			var mesh_node = MeshInstance3D.new()
 			#print(1)
