@@ -81,18 +81,20 @@ func get_cells_deta(aabb:AABB):
 		#print(_get_cells(aabb_global_to_local(aabb)))
 		
 		
-		if _block_Grid_mash.has(mesh):
-			if not _list_Grid_mash.has(mesh):
-				var mesh_node = MeshInstance3D.new()
-				#print(1)
-				mesh_node.name = "%.1f, %.1f, %.1f" % [mesh.x, mesh.y, mesh.z]
-				mesh_node.mesh = _block_Grid_mash[mesh]
-				mesh_node.position = get_cell_position(mesh)
-				mesh_node.material_override = block_types.get_material()
-				
-				add_child(mesh_node)
-				_list_Grid_mash[mesh] = true
-				
+		if _block_Grid_mash.has(mesh) and not _list_Grid_mash.has(mesh) and _block_Grid_mash[mesh] != Array():
+			var mesh_n = ArrayMesh.new()
+			var mesh_node = MeshInstance3D.new()
+			#print(1)
+			
+			mesh_n.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, _block_Grid_mash[mesh], Array(), Dictionary(), VoxelGridMeshTool.FLAGS)
+			mesh_node.name = "%.1f, %.1f, %.1f" % [mesh.x, mesh.y, mesh.z]
+			mesh_node.mesh = mesh_n
+			mesh_node.position = get_cell_position(mesh)
+			mesh_node.material_override = block_types.get_material()
+			
+			add_child(mesh_node)
+			_list_Grid_mash[mesh] = true
+			
 
 			
 	
