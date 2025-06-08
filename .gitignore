@@ -3,3 +3,5 @@
 /android/
 .vscode/
 gitvenv/
+/__pycache__
+*.os
